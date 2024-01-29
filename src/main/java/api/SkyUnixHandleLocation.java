@@ -83,4 +83,23 @@ public class SkyUnixHandleLocation {
             return null;
         }
     }
+
+    public World getWorldForLocation(String folder, String table, String key) {
+        File folderFile = new File(FilePath.folderPath, folder);
+        File settingFile = new File(folderFile, table);
+        Properties properties = new Properties();
+        if (!settingFile.exists()) {
+            System.err.println("File not found: " + settingFile.getPath());
+            return null;
+        }
+        try (InputStream input = new FileInputStream(settingFile)) {
+            properties.load(input);
+        } catch (IOException e) {
+            System.err.println("Failed to load location: " + e.getMessage());
+            return null;
+        }
+        String locationKey = key;
+        String worldName = properties.getProperty(locationKey + ".world");
+        return Bukkit.getWorld(worldName);
+    }
 }
