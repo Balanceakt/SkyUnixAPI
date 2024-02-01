@@ -1,4 +1,4 @@
-# SkyUnixBungeeCord Data API
+# SkyUnix Data API
 
 Die SkyUnix Data Management API ist eine Java-Bibliothek, die entwickelt wurde, um die effiziente Verwaltung und Speicherung von Daten für das SkyUnix.de-Netzwerk zu erleichtern. Diese API ersetzt herkömmliche MySQL-Datenbanken und Standardkonfigurationsdateien durch benutzerdefinierte Lösungen und bietet Entwicklern eine unkomplizierte Schnittstelle für Aufgaben im Bereich Datenmanagement.
 

@@ -130,7 +130,7 @@ public class SkyUnixHandleArgs {
         }
     }
 
-    public static List<String> readAllArgsAtIndex(final String folder, final String table, int argIndex) {
+    public List<String> readAllArgsAtIndex(final String folder, final String table, int argIndex) {
         File folderFile = new File(FilePath.folderPath, folder);
         File settingFile = new File(folderFile, table);
         Properties properties = new Properties();

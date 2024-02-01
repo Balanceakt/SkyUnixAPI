@@ -2,11 +2,14 @@ package test;
 
 import api.SkyUnixHandleArgs;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class TestSkyUnixApi {
 
     private static SkyUnixHandleArgs argsTest = new SkyUnixHandleArgs();
     public static SkyUnixHandleArgs getArgsTest() {
-        argsTest.setSimpleArgValue("skyblock", "prefix", "prefixTEST4", "Hallo4");
+        System.out.println( argsTest.readAllArgsAtIndex("skyblock", "test", 2));
         return argsTest;
     }
 
