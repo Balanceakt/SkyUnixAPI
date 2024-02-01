@@ -59,4 +59,32 @@ public class SkyUnixHandleNullCheck {
             return false;
         }
     }
+
+    public boolean isValueExistsInTable(String folder, String table, String valueToCheck) {
+        File folderFile = new File(FilePath.folderPath, folder);
+        File settingFile = new File(folderFile, table);
+        Properties properties = new Properties();
+
+        if (!folderFile.exists() || !settingFile.exists()) {
+            return false;
+        }
+
+        try (InputStream input = new FileInputStream(settingFile)) {
+            properties.load(input);
+
+            for (String key : properties.stringPropertyNames()) {
+                String values = properties.getProperty(key);
+
+                if (values != null) {
+                    if (values.contains(valueToCheck)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

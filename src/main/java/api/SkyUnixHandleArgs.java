@@ -130,6 +130,38 @@ public class SkyUnixHandleArgs {
         }
     }
 
+    public static List<String> readAllArgsAtIndex(final String folder, final String table, int argIndex) {
+        File folderFile = new File(FilePath.folderPath, folder);
+        File settingFile = new File(folderFile, table);
+        Properties properties = new Properties();
+        try {
+            if (!folderFile.exists()) {
+                System.out.println("Folder does not exist: " + folderFile.getAbsolutePath());
+                return null;
+            }
+            if (!settingFile.exists()) {
+                System.out.println("Table does not exist: " + settingFile.getAbsolutePath());
+                return null;
+            }
+            try (InputStream input = new FileInputStream(settingFile)) {
+                properties.load(input);
+                List<String> valuesAtIndex = new ArrayList<>();
+                properties.forEach((key, value) -> {
+                    String[] valuesArray = value.toString().split(",");
+                    if (argIndex >= 0 && argIndex < valuesArray.length) {
+                        valuesAtIndex.add(valuesArray[argIndex]);
+                    } else {
+                        System.out.println("Index out of range for key: " + key);
+                    }
+                });
+                return valuesAtIndex;
+            }
+        } catch (IOException e) {
+            System.out.println("An error occurred while reading properties: " + e.getMessage());
+            return null;
+        }
+    }
+
     private String convertColorCodes(String input) {
         return input.replace("&", "§");
     }
