@@ -186,6 +186,33 @@ public class SkyUnixHandleArgs {
         }
     }
 
+    public Set<String> readTableKeys(final String folder, final String table) {
+        File folderFile = new File(FilePath.folderPath, folder);
+        File settingFile = new File(folderFile, table);
+        Properties properties = new Properties();
+        Set<String> keys = null;
+
+        try {
+            if (!folderFile.exists()) {
+                System.out.println("Folder does not exist: " + folderFile.getAbsolutePath());
+                return null;
+            }
+            if (!settingFile.exists()) {
+                System.out.println("Table does not exist: " + settingFile.getAbsolutePath());
+                return null;
+            }
+
+            try (InputStream input = new FileInputStream(settingFile)) {
+                properties.load(input);
+                keys = properties.stringPropertyNames();
+            }
+        } catch (IOException e) {
+            System.out.println("An error occurred while reading properties: " + e.getMessage());
+        }
+
+        return keys;
+    }
+
     private String convertColorCodes(String input) {
         return input.replace("&", "§");
     }

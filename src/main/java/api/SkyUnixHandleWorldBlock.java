@@ -11,6 +11,8 @@ import utils.FilePath;
 import utils.FolderHandle;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 public class SkyUnixHandleWorldBlock {
@@ -33,20 +35,27 @@ public class SkyUnixHandleWorldBlock {
                 System.err.println("Failed to create file: " + settingFile.getPath());
                 return;
             }
+
             try (InputStream input = new FileInputStream(settingFile)) {
                 properties.load(input);
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
             String blockKey = key;
+            int count = 0;
+            while (properties.containsKey(blockKey + "." + count + ".world")) {
+                count++;
+            }
+
             Location location = block.getLocation();
-            properties.setProperty(blockKey + ".world", location.getWorld().getName());
-            properties.setProperty(blockKey + ".x", String.valueOf(location.getX()));
-            properties.setProperty(blockKey + ".y", String.valueOf(location.getY()));
-            properties.setProperty(blockKey + ".z", String.valueOf(location.getZ()));
-            properties.setProperty(blockKey + ".type", block.getType().toString());
-            properties.setProperty(blockKey + ".data", String.valueOf(block.getBlockData().getAsString()));
-            properties.setProperty(blockKey + ".direction", block.getFace(block.getRelative(BlockFace.DOWN)).name());
+            properties.setProperty(blockKey + "." + count + ".world", location.getWorld().getName());
+            properties.setProperty(blockKey + "." + count + ".x", String.valueOf(location.getX()));
+            properties.setProperty(blockKey + "." + count + ".y", String.valueOf(location.getY()));
+            properties.setProperty(blockKey + "." + count + ".z", String.valueOf(location.getZ()));
+            properties.setProperty(blockKey + "." + count + ".type", block.getType().toString());
+            properties.setProperty(blockKey + "." + count + ".data", String.valueOf(block.getBlockData().getAsString()));
+            properties.setProperty(blockKey + "." + count + ".direction", block.getFace(block.getRelative(BlockFace.DOWN)).name());
 
             try (OutputStream output = new FileOutputStream(settingFile)) {
                 properties.store(output, "Updated by saveBlock method");
@@ -59,142 +68,163 @@ public class SkyUnixHandleWorldBlock {
         }
     }
 
-    public Block loadBlock(String folder, String table, String key) {
+    public List<Block> loadBlocks(String folder, String table, String key) {
+        List<Block> blocks = new ArrayList<>();
         File folderFile = new File(FilePath.folderPath, folder);
         File settingFile = new File(folderFile, table);
         Properties properties = new Properties();
+
         if (!settingFile.exists()) {
             System.err.println("File not found: " + settingFile.getPath());
-            return null;
+            return blocks;
         }
+
         try (InputStream input = new FileInputStream(settingFile)) {
             properties.load(input);
         } catch (IOException e) {
             System.err.println("Failed to load block: " + e.getMessage());
-            return null;
+            return blocks;
         }
-        System.out.println("Loaded from file: " + settingFile.getAbsolutePath());
-        System.out.println("Existing properties:");
-        properties.forEach((k, v) -> System.out.println("Key: " + k + ", Value: " + v));
-        String blockKey = key;
-        double x = Double.parseDouble(properties.getProperty(blockKey + ".x"));
-        double y = Double.parseDouble(properties.getProperty(blockKey + ".y"));
-        double z = Double.parseDouble(properties.getProperty(blockKey + ".z"));
-        String worldName = properties.getProperty(blockKey + ".world");
-        Material type = Material.getMaterial(properties.getProperty(blockKey + ".type"));
-        String dataString = properties.getProperty(blockKey + ".data");
-        String directionString = properties.getProperty(blockKey + ".direction");
 
-        World world = Bukkit.getWorld(worldName);
-        if (world != null) {
-            Block block = world.getBlockAt((int) x, (int) y, (int) z);
-            if (block != null) {
-                if (dataString != null) {
-                    BlockData blockData = Bukkit.createBlockData(dataString);
-                    block.setBlockData(blockData);
+        String blockKey = key;
+        int count = 0;
+        while (properties.containsKey(blockKey + "." + count + ".world")) {
+            String worldName = properties.getProperty(blockKey + "." + count + ".world");
+            double x = Double.parseDouble(properties.getProperty(blockKey + "." + count + ".x"));
+            double y = Double.parseDouble(properties.getProperty(blockKey + "." + count + ".y"));
+            double z = Double.parseDouble(properties.getProperty(blockKey + "." + count + ".z"));
+
+            World world = Bukkit.getWorld(worldName);
+            if (world != null) {
+                Block block = world.getBlockAt((int) x, (int) y, (int) z);
+                if (block != null) {
+                    blocks.add(block);
+                } else {
+                    System.err.println("Failed to load block at location: " + x + ", " + y + ", " + z);
                 }
-                return block;
             } else {
-                System.err.println("Failed to load block at location: " + x + ", " + y + ", " + z);
+                System.err.println("World not found: " + worldName);
             }
-        } else {
-            System.err.println("World not found: " + worldName);
+            count++;
         }
-        return null;
+        return blocks;
     }
 
-    public String getBlockType(String folder, String table, String key) {
+    public List<String> getBlockTypes(String folder, String table, String key) {
+        List<String> types = new ArrayList<>();
         File folderFile = new File(FilePath.folderPath, folder);
         File settingFile = new File(folderFile, table);
         Properties properties = new Properties();
 
         if (!settingFile.exists()) {
             System.err.println("File not found: " + settingFile.getPath());
-            return null;
+            return types;
         }
 
         try (InputStream input = new FileInputStream(settingFile)) {
             properties.load(input);
         } catch (IOException e) {
             System.err.println("Failed to load block properties: " + e.getMessage());
-            return null;
+            return types;
         }
 
         String blockKey = key;
-        return properties.getProperty(blockKey + ".type");
+        int count = 0;
+        while (properties.containsKey(blockKey + "." + count + ".type")) {
+            types.add(properties.getProperty(blockKey + "." + count + ".type"));
+            count++;
+        }
+        return types;
     }
 
-    public String getBlockData(String folder, String table, String key) {
+    public List<String> getBlockDataList(String folder, String table, String key) {
+        List<String> dataList = new ArrayList<>();
         File folderFile = new File(FilePath.folderPath, folder);
         File settingFile = new File(folderFile, table);
         Properties properties = new Properties();
 
         if (!settingFile.exists()) {
             System.err.println("File not found: " + settingFile.getPath());
-            return null;
+            return dataList;
         }
 
         try (InputStream input = new FileInputStream(settingFile)) {
             properties.load(input);
         } catch (IOException e) {
             System.err.println("Failed to load block properties: " + e.getMessage());
-            return null;
+            return dataList;
         }
 
         String blockKey = key;
-        return properties.getProperty(blockKey + ".data");
+        int count = 0;
+        while (properties.containsKey(blockKey + "." + count + ".data")) {
+            dataList.add(properties.getProperty(blockKey + "." + count + ".data"));
+            count++;
+        }
+        return dataList;
     }
 
-    public String getBlockDirection(String folder, String table, String key) {
+    public List<String> getBlockDirections(String folder, String table, String key) {
+        List<String> directions = new ArrayList<>();
         File folderFile = new File(FilePath.folderPath, folder);
         File settingFile = new File(folderFile, table);
         Properties properties = new Properties();
 
         if (!settingFile.exists()) {
             System.err.println("File not found: " + settingFile.getPath());
-            return null;
+            return directions;
         }
 
         try (InputStream input = new FileInputStream(settingFile)) {
             properties.load(input);
         } catch (IOException e) {
             System.err.println("Failed to load block properties: " + e.getMessage());
-            return null;
+            return directions;
         }
 
         String blockKey = key;
-        return properties.getProperty(blockKey + ".direction");
+        int count = 0;
+        while (properties.containsKey(blockKey + "." + count + ".direction")) {
+            directions.add(properties.getProperty(blockKey + "." + count + ".direction"));
+            count++;
+        }
+        return directions;
     }
 
-    public Location getBlockLocation(String folder, String table, String key) {
+    public List<Location> getBlockLocations(String folder, String table, String key) {
+        List<Location> locations = new ArrayList<>();
         File folderFile = new File(FilePath.folderPath, folder);
         File settingFile = new File(folderFile, table);
         Properties properties = new Properties();
 
         if (!settingFile.exists()) {
             System.err.println("File not found: " + settingFile.getPath());
-            return null;
+            return locations;
         }
 
         try (InputStream input = new FileInputStream(settingFile)) {
             properties.load(input);
         } catch (IOException e) {
             System.err.println("Failed to load block properties: " + e.getMessage());
-            return null;
+            return locations;
         }
 
         String blockKey = key;
-        String worldName = properties.getProperty(blockKey + ".world");
-        double x = Double.parseDouble(properties.getProperty(blockKey + ".x"));
-        double y = Double.parseDouble(properties.getProperty(blockKey + ".y"));
-        double z = Double.parseDouble(properties.getProperty(blockKey + ".z"));
+        int count = 0;
+        while (properties.containsKey(blockKey + "." + count + ".world")) {
+            String worldName = properties.getProperty(blockKey + "." + count + ".world");
+            double x = Double.parseDouble(properties.getProperty(blockKey + "." + count + ".x"));
+            double y = Double.parseDouble(properties.getProperty(blockKey + "." + count + ".y"));
+            double z = Double.parseDouble(properties.getProperty(blockKey + "." + count + ".z"));
 
-        World world = Bukkit.getWorld(worldName);
-        if (world != null) {
-            return new Location(world, x, y, z);
-        } else {
-            System.err.println("World not found: " + worldName);
-            return null;
+            World world = Bukkit.getWorld(worldName);
+            if (world != null) {
+                locations.add(new Location(world, x, y, z));
+            } else {
+                System.err.println("World not found: " + worldName);
+            }
+            count++;
         }
+        return locations;
     }
 }
