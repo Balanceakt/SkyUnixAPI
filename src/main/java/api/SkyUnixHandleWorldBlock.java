@@ -227,4 +227,46 @@ public class SkyUnixHandleWorldBlock {
         }
         return locations;
     }
+
+    public Block getBlockAtCoordinate(String folder, String table, String key, Location coordinate) {
+        File folderFile = new File(FilePath.folderPath, folder);
+        File settingFile = new File(folderFile, table);
+        Properties properties = new Properties();
+
+        if (!settingFile.exists()) {
+            System.err.println("File not found: " + settingFile.getPath());
+            return null;
+        }
+
+        try (InputStream input = new FileInputStream(settingFile)) {
+            properties.load(input);
+        } catch (IOException e) {
+            System.err.println("Failed to load block properties: " + e.getMessage());
+            return null;
+        }
+
+        String blockKey = key;
+        int count = 0;
+        while (properties.containsKey(blockKey + "." + count + ".world")) {
+            String worldName = properties.getProperty(blockKey + "." + count + ".world");
+            double x = Double.parseDouble(properties.getProperty(blockKey + "." + count + ".x"));
+            double y = Double.parseDouble(properties.getProperty(blockKey + "." + count + ".y"));
+            double z = Double.parseDouble(properties.getProperty(blockKey + "." + count + ".z"));
+
+            if (worldName.equals(coordinate.getWorld().getName()) && x == coordinate.getX() && y == coordinate.getY() && z == coordinate.getZ()) {
+                World world = Bukkit.getWorld(worldName);
+                if (world != null) {
+                    return world.getBlockAt((int) x, (int) y, (int) z);
+                } else {
+                    System.err.println("World not found: " + worldName);
+                    return null;
+                }
+            }
+
+            count++;
+        }
+
+        System.err.println("Block not found at coordinate: " + coordinate);
+        return null;
+    }
 }

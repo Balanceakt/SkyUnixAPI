@@ -25,7 +25,7 @@ public class MainSkyUnix extends JavaPlugin {
         registerClass(simplUpdateArgs);
         registerClass(simpleNullCheck);
         registerClass(simplePlaceHolder);
-       registerClass(simpleWorldBlock);
+        registerClass(simpleWorldBlock);
     }
 
     public void registerClass(Object instance) {
