@@ -11,7 +11,7 @@ Die SkyUnix Data Management API ist eine Java-Bibliothek, die entwickelt wurde, 
         SkyUnixHandleUpdate simplUpdateArgs = new SkyUnixHandleUpdate();
         SkyUnixHandleNullCheck simpleNullCheck = new SkyUnixHandleNullCheck();
         SkyUnixHandlePlaceholder simplePlaceHolder = new SkyUnixHandlePlaceholder();
-
+        SkyUnixHandleWorldBlock simpleWorldBlock = new SkyUnixHandleWorldBlock();
 
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
@@ -36,7 +36,7 @@ dependencies {
 	<dependency>
 	    <groupId>com.github.Balanceakt</groupId>
 	    <artifactId>SkyUnixAPIBungeecord</artifactId>
-	    <version>1.1.2</version>
+	    <version>1.1.8</version>
 	</dependency>
 
 readSimpleArgs: This method reads a simple value from a specified table and key in a file. You can also specify an index to retrieve a specific value from a comma-separated list of values.
