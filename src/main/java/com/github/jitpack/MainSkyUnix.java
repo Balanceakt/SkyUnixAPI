@@ -18,12 +18,14 @@ public class MainSkyUnix extends JavaPlugin {
         SkyUnixHandleUpdate simplUpdateArgs = new SkyUnixHandleUpdate();
         SkyUnixHandleNullCheck simpleNullCheck = new SkyUnixHandleNullCheck();
         SkyUnixHandlePlaceholder simplePlaceHolder = new SkyUnixHandlePlaceholder();
+        SkyUnixHandleWorldBlock simpleWorldBlock = new SkyUnixHandleWorldBlock();
         registerClass(simpleDelete);
         registerClass(simpleLocation);
         registerClass(simpleReadArgs);
         registerClass(simplUpdateArgs);
         registerClass(simpleNullCheck);
         registerClass(simplePlaceHolder);
+        registerClass(simpleWorldBlock);
     }
 
     public void registerClass(Object instance) {
