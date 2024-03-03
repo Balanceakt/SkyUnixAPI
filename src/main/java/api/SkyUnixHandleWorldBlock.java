@@ -246,27 +246,41 @@ public class SkyUnixHandleWorldBlock {
         }
 
         String blockKey = key;
-        int count = 0;
-        while (properties.containsKey(blockKey + "." + count + ".world")) {
-            String worldName = properties.getProperty(blockKey + "." + count + ".world");
-            double x = Double.parseDouble(properties.getProperty(blockKey + "." + count + ".x"));
-            double y = Double.parseDouble(properties.getProperty(blockKey + "." + count + ".y"));
-            double z = Double.parseDouble(properties.getProperty(blockKey + "." + count + ".z"));
+        String worldName = coordinate.getWorld().getName();
+        int x = coordinate.getBlockX();
+        int y = coordinate.getBlockY();
+        int z = coordinate.getBlockZ();
 
-            if (worldName.equals(coordinate.getWorld().getName()) && x == coordinate.getX() && y == coordinate.getY() && z == coordinate.getZ()) {
-                World world = Bukkit.getWorld(worldName);
-                if (world != null) {
-                    return world.getBlockAt((int) x, (int) y, (int) z);
+        String blockTypeKey = blockKey + "." + "type";
+        String blockDataKey = blockKey + "." + "data";
+
+        if (properties.containsKey(blockTypeKey) && properties.containsKey(blockDataKey)) {
+            String blockType = properties.getProperty(blockTypeKey);
+            String blockData = properties.getProperty(blockDataKey);
+
+            World world = Bukkit.getWorld(worldName);
+            if (world != null) {
+                Block block = world.getBlockAt(x, y, z);
+                if (block != null) {
+                    Material material = Material.getMaterial(blockType);
+                    if (material != null) {
+                        BlockData blockDataObj = Bukkit.createBlockData(blockData);
+                        block.setBlockData(blockDataObj, false);
+                        return block;
+                    } else {
+                        System.err.println("Invalid block type: " + blockType);
+                    }
                 } else {
-                    System.err.println("World not found: " + worldName);
-                    return null;
+                    System.err.println("Failed to get block at location: " + x + ", " + y + ", " + z);
                 }
+            } else {
+                System.err.println("World not found: " + worldName);
             }
-
-            count++;
+        } else {
+            System.err.println("Block data not found for key: " + key);
         }
-
-        System.err.println("Block not found at coordinate: " + coordinate);
         return null;
     }
+
+
 }
