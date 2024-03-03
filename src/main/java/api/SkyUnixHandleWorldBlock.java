@@ -246,41 +246,61 @@ public class SkyUnixHandleWorldBlock {
         }
 
         String blockKey = key;
-        String worldName = coordinate.getWorld().getName();
-        int x = coordinate.getBlockX();
-        int y = coordinate.getBlockY();
-        int z = coordinate.getBlockZ();
 
-        String blockTypeKey = blockKey + "." + "type";
-        String blockDataKey = blockKey + "." + "data";
+        List<Location> blockLocations = getBlockLocations(folder, table, key);
+        if (blockLocations.isEmpty()) {
+            System.err.println("No blocks found for key: " + key);
+            return null;
+        }
 
-        if (properties.containsKey(blockTypeKey) && properties.containsKey(blockDataKey)) {
-            String blockType = properties.getProperty(blockTypeKey);
-            String blockData = properties.getProperty(blockDataKey);
+        Location closestLocation = null;
+        double minDistanceSquared = Double.MAX_VALUE;
 
-            World world = Bukkit.getWorld(worldName);
-            if (world != null) {
-                Block block = world.getBlockAt(x, y, z);
-                if (block != null) {
-                    Material material = Material.getMaterial(blockType);
-                    if (material != null) {
-                        BlockData blockDataObj = Bukkit.createBlockData(blockData);
-                        block.setBlockData(blockDataObj, false);
-                        return block;
+        for (Location location : blockLocations) {
+            double distanceSquared = location.distanceSquared(coordinate);
+            if (distanceSquared < minDistanceSquared) {
+                minDistanceSquared = distanceSquared;
+                closestLocation = location;
+            }
+        }
+
+        if (closestLocation != null) {
+            String worldName = closestLocation.getWorld().getName();
+            int x = closestLocation.getBlockX();
+            int y = closestLocation.getBlockY();
+            int z = closestLocation.getBlockZ();
+
+            String blockTypeKey = blockKey + "." + "type";
+            String blockDataKey = blockKey + "." + "data";
+
+            if (properties.containsKey(blockTypeKey) && properties.containsKey(blockDataKey)) {
+                String blockType = properties.getProperty(blockTypeKey);
+                String blockData = properties.getProperty(blockDataKey);
+
+                World world = Bukkit.getWorld(worldName);
+                if (world != null) {
+                    Block block = world.getBlockAt(x, y, z);
+                    if (block != null) {
+                        Material material = Material.getMaterial(blockType);
+                        if (material != null) {
+                            BlockData blockDataObj = Bukkit.createBlockData(blockData);
+                            block.setBlockData(blockDataObj, false);
+                            return block;
+                        } else {
+                            System.err.println("Invalid block type: " + blockType);
+                        }
                     } else {
-                        System.err.println("Invalid block type: " + blockType);
+                        System.err.println("Failed to get block at location: " + x + ", " + y + ", " + z);
                     }
                 } else {
-                    System.err.println("Failed to get block at location: " + x + ", " + y + ", " + z);
+                    System.err.println("World not found: " + worldName);
                 }
             } else {
-                System.err.println("World not found: " + worldName);
+                System.err.println("Block data not found for key: " + key);
             }
         } else {
-            System.err.println("Block data not found for key: " + key);
+            System.err.println("No closest location found for key: " + key);
         }
         return null;
     }
-
-
 }
