@@ -6,6 +6,7 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.BlockData;
 import utils.FilePath;
 import utils.FolderHandle;
 
@@ -58,7 +59,6 @@ public class SkyUnixHandleWorldBlock {
         }
     }
 
-
     public Block loadBlock(String folder, String table, String key) {
         File folderFile = new File(FilePath.folderPath, folder);
         File settingFile = new File(folderFile, table);
@@ -89,12 +89,9 @@ public class SkyUnixHandleWorldBlock {
         if (world != null) {
             Block block = world.getBlockAt((int) x, (int) y, (int) z);
             if (block != null) {
-                block.setType(type);
                 if (dataString != null) {
-                    block.setBlockData(Bukkit.createBlockData(dataString));
-                }
-                if (directionString != null) {
-                    BlockFace direction = BlockFace.valueOf(directionString);
+                    BlockData blockData = Bukkit.createBlockData(dataString);
+                    block.setBlockData(blockData);
                 }
                 return block;
             } else {
@@ -104,5 +101,37 @@ public class SkyUnixHandleWorldBlock {
             System.err.println("World not found: " + worldName);
         }
         return null;
+    }
+
+    public Block queryBlock(String folder, String table, String key) {
+        File folderFile = new File(FilePath.folderPath, folder);
+        File settingFile = new File(folderFile, table);
+        Properties properties = new Properties();
+        if (!settingFile.exists()) {
+            System.err.println("File not found: " + settingFile.getPath());
+            return null;
+        }
+        try (InputStream input = new FileInputStream(settingFile)) {
+            properties.load(input);
+        } catch (IOException e) {
+            System.err.println("Failed to load block: " + e.getMessage());
+            return null;
+        }
+        System.out.println("Loaded from file: " + settingFile.getAbsolutePath());
+        System.out.println("Existing properties:");
+        properties.forEach((k, v) -> System.out.println("Key: " + k + ", Value: " + v));
+        String blockKey = key;
+        double x = Double.parseDouble(properties.getProperty(blockKey + ".x"));
+        double y = Double.parseDouble(properties.getProperty(blockKey + ".y"));
+        double z = Double.parseDouble(properties.getProperty(blockKey + ".z"));
+        String worldName = properties.getProperty(blockKey + ".world");
+
+        World world = Bukkit.getWorld(worldName);
+        if (world != null) {
+            return world.getBlockAt((int) x, (int) y, (int) z);
+        } else {
+            System.err.println("World not found: " + worldName);
+            return null;
+        }
     }
 }
