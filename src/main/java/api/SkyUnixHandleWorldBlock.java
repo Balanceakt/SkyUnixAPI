@@ -228,7 +228,7 @@ public class SkyUnixHandleWorldBlock {
         return locations;
     }
 
-    public Block getBlockAtCoordinate(String folder, String table, String key, Location coordinate) {
+    public Block getBlockAtCoordinate(String folder, String table, Location coordinate) {
         File folderFile = new File(FilePath.folderPath, folder);
         File settingFile = new File(folderFile, table);
         Properties properties = new Properties();
@@ -245,11 +245,9 @@ public class SkyUnixHandleWorldBlock {
             return null;
         }
 
-        String blockKey = key;
-
-        List<Location> blockLocations = getBlockLocations(folder, table, key);
+        List<Location> blockLocations = getAllBlockLocations(folder, table);
         if (blockLocations.isEmpty()) {
-            System.err.println("No blocks found for key: " + key);
+            System.err.println("No blocks found in folder: " + folder + ", table: " + table);
             return null;
         }
 
@@ -270,8 +268,8 @@ public class SkyUnixHandleWorldBlock {
             int y = closestLocation.getBlockY();
             int z = closestLocation.getBlockZ();
 
-            String blockTypeKey = blockKey + "." + "type";
-            String blockDataKey = blockKey + "." + "data";
+            String blockTypeKey = folder + "." + table + "." + x + "." + y + "." + z + ".type";
+            String blockDataKey = folder + "." + table + "." + x + "." + y + "." + z + ".data";
 
             if (properties.containsKey(blockTypeKey) && properties.containsKey(blockDataKey)) {
                 String blockType = properties.getProperty(blockTypeKey);
@@ -296,11 +294,48 @@ public class SkyUnixHandleWorldBlock {
                     System.err.println("World not found: " + worldName);
                 }
             } else {
-                System.err.println("Block data not found for key: " + key);
+                System.err.println("Block data not found for location: " + x + ", " + y + ", " + z);
             }
         } else {
-            System.err.println("No closest location found for key: " + key);
+            System.err.println("No closest location found for coordinate: " + coordinate.toString());
         }
         return null;
     }
+
+    public List<Location> getAllBlockLocations(String folder, String table) {
+        List<Location> locations = new ArrayList<>();
+        File folderFile = new File(FilePath.folderPath, folder);
+        File settingFile = new File(folderFile, table);
+        Properties properties = new Properties();
+
+        if (!settingFile.exists()) {
+            System.err.println("File not found: " + settingFile.getPath());
+            return locations;
+        }
+
+        try (InputStream input = new FileInputStream(settingFile)) {
+            properties.load(input);
+        } catch (IOException e) {
+            System.err.println("Failed to load block properties: " + e.getMessage());
+            return locations;
+        }
+
+        for (String key : properties.stringPropertyNames()) {
+            if (key.endsWith(".world")) {
+                String worldName = properties.getProperty(key);
+                double x = Double.parseDouble(properties.getProperty(key.replace(".world", ".x")));
+                double y = Double.parseDouble(properties.getProperty(key.replace(".world", ".y")));
+                double z = Double.parseDouble(properties.getProperty(key.replace(".world", ".z")));
+
+                World world = Bukkit.getWorld(worldName);
+                if (world != null) {
+                    locations.add(new Location(world, x, y, z));
+                } else {
+                    System.err.println("World not found: " + worldName);
+                }
+            }
+        }
+        return locations;
+    }
+
 }
