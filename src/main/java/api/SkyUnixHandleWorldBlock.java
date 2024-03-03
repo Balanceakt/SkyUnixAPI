@@ -103,21 +103,84 @@ public class SkyUnixHandleWorldBlock {
         return null;
     }
 
-    public void getBlock(String folder, String table, String key) {
+    public String getBlockType(String folder, String table, String key) {
         File folderFile = new File(FilePath.folderPath, folder);
         File settingFile = new File(folderFile, table);
         Properties properties = new Properties();
 
         if (!settingFile.exists()) {
             System.err.println("File not found: " + settingFile.getPath());
-            return;
+            return null;
         }
 
         try (InputStream input = new FileInputStream(settingFile)) {
             properties.load(input);
         } catch (IOException e) {
             System.err.println("Failed to load block properties: " + e.getMessage());
-            return;
+            return null;
+        }
+
+        String blockKey = key;
+        return properties.getProperty(blockKey + ".type");
+    }
+
+    public String getBlockData(String folder, String table, String key) {
+        File folderFile = new File(FilePath.folderPath, folder);
+        File settingFile = new File(folderFile, table);
+        Properties properties = new Properties();
+
+        if (!settingFile.exists()) {
+            System.err.println("File not found: " + settingFile.getPath());
+            return null;
+        }
+
+        try (InputStream input = new FileInputStream(settingFile)) {
+            properties.load(input);
+        } catch (IOException e) {
+            System.err.println("Failed to load block properties: " + e.getMessage());
+            return null;
+        }
+
+        String blockKey = key;
+        return properties.getProperty(blockKey + ".data");
+    }
+
+    public String getBlockDirection(String folder, String table, String key) {
+        File folderFile = new File(FilePath.folderPath, folder);
+        File settingFile = new File(folderFile, table);
+        Properties properties = new Properties();
+
+        if (!settingFile.exists()) {
+            System.err.println("File not found: " + settingFile.getPath());
+            return null;
+        }
+
+        try (InputStream input = new FileInputStream(settingFile)) {
+            properties.load(input);
+        } catch (IOException e) {
+            System.err.println("Failed to load block properties: " + e.getMessage());
+            return null;
+        }
+
+        String blockKey = key;
+        return properties.getProperty(blockKey + ".direction");
+    }
+
+    public Location getBlockLocation(String folder, String table, String key) {
+        File folderFile = new File(FilePath.folderPath, folder);
+        File settingFile = new File(folderFile, table);
+        Properties properties = new Properties();
+
+        if (!settingFile.exists()) {
+            System.err.println("File not found: " + settingFile.getPath());
+            return null;
+        }
+
+        try (InputStream input = new FileInputStream(settingFile)) {
+            properties.load(input);
+        } catch (IOException e) {
+            System.err.println("Failed to load block properties: " + e.getMessage());
+            return null;
         }
 
         String blockKey = key;
@@ -125,16 +188,13 @@ public class SkyUnixHandleWorldBlock {
         double x = Double.parseDouble(properties.getProperty(blockKey + ".x"));
         double y = Double.parseDouble(properties.getProperty(blockKey + ".y"));
         double z = Double.parseDouble(properties.getProperty(blockKey + ".z"));
-        String type = properties.getProperty(blockKey + ".type");
-        String data = properties.getProperty(blockKey + ".data");
-        String direction = properties.getProperty(blockKey + ".direction");
 
-        System.out.println("World: " + worldName);
-        System.out.println("X: " + x);
-        System.out.println("Y: " + y);
-        System.out.println("Z: " + z);
-        System.out.println("Type: " + type);
-        System.out.println("Data: " + data);
-        System.out.println("Direction: " + direction);
+        World world = Bukkit.getWorld(worldName);
+        if (world != null) {
+            return new Location(world, x, y, z);
+        } else {
+            System.err.println("World not found: " + worldName);
+            return null;
+        }
     }
 }
