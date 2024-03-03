@@ -103,35 +103,38 @@ public class SkyUnixHandleWorldBlock {
         return null;
     }
 
-    public Block queryBlock(String folder, String table, String key) {
+    public void getBlock(String folder, String table, String key) {
         File folderFile = new File(FilePath.folderPath, folder);
         File settingFile = new File(folderFile, table);
         Properties properties = new Properties();
+
         if (!settingFile.exists()) {
             System.err.println("File not found: " + settingFile.getPath());
-            return null;
+            return;
         }
+
         try (InputStream input = new FileInputStream(settingFile)) {
             properties.load(input);
         } catch (IOException e) {
-            System.err.println("Failed to load block: " + e.getMessage());
-            return null;
+            System.err.println("Failed to load block properties: " + e.getMessage());
+            return;
         }
-        System.out.println("Loaded from file: " + settingFile.getAbsolutePath());
-        System.out.println("Existing properties:");
-        properties.forEach((k, v) -> System.out.println("Key: " + k + ", Value: " + v));
+
         String blockKey = key;
+        String worldName = properties.getProperty(blockKey + ".world");
         double x = Double.parseDouble(properties.getProperty(blockKey + ".x"));
         double y = Double.parseDouble(properties.getProperty(blockKey + ".y"));
         double z = Double.parseDouble(properties.getProperty(blockKey + ".z"));
-        String worldName = properties.getProperty(blockKey + ".world");
+        String type = properties.getProperty(blockKey + ".type");
+        String data = properties.getProperty(blockKey + ".data");
+        String direction = properties.getProperty(blockKey + ".direction");
 
-        World world = Bukkit.getWorld(worldName);
-        if (world != null) {
-            return world.getBlockAt((int) x, (int) y, (int) z);
-        } else {
-            System.err.println("World not found: " + worldName);
-            return null;
-        }
+        System.out.println("World: " + worldName);
+        System.out.println("X: " + x);
+        System.out.println("Y: " + y);
+        System.out.println("Z: " + z);
+        System.out.println("Type: " + type);
+        System.out.println("Data: " + data);
+        System.out.println("Direction: " + direction);
     }
 }
