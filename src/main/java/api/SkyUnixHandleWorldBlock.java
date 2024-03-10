@@ -228,78 +228,65 @@ public class SkyUnixHandleWorldBlock {
         return locations;
     }
 
-    public Block getBlockAtCoordinate(String folder, String table, Location coordinate) {
+    public void setBlockAtCoordinate(String folder, String table, Location location) {
         File folderFile = new File(FilePath.folderPath, folder);
         File settingFile = new File(folderFile, table);
         Properties properties = new Properties();
 
         if (!settingFile.exists()) {
             System.err.println("File not found: " + settingFile.getPath());
-            return null;
+            return;
         }
 
         try (InputStream input = new FileInputStream(settingFile)) {
             properties.load(input);
         } catch (IOException e) {
             System.err.println("Failed to load block properties: " + e.getMessage());
-            return null;
+            return;
         }
 
-        List<Location> blockLocations = getAllBlockLocations(folder, table);
-        if (blockLocations.isEmpty()) {
-            System.err.println("No blocks found in folder: " + folder + ", table: " + table);
-            return null;
-        }
+        String blockTypeKey = folder + "." + table + ".type";
+        String blockDataKey = folder + "." + table + ".data";
 
-        Location closestLocation = null;
-        double minDistanceSquared = Double.MAX_VALUE;
+        if (properties.containsKey(blockTypeKey) && properties.containsKey(blockDataKey)) {
+            String worldName = properties.getProperty(folder + "." + table + ".world");
+            double x = Double.parseDouble(properties.getProperty(folder + "." + table + ".x"));
+            double y = Double.parseDouble(properties.getProperty(folder + "." + table + ".y"));
+            double z = Double.parseDouble(properties.getProperty(folder + "." + table + ".z"));
 
-        for (Location location : blockLocations) {
-            double distanceSquared = location.distanceSquared(coordinate);
-            if (distanceSquared < minDistanceSquared) {
-                minDistanceSquared = distanceSquared;
-                closestLocation = location;
-            }
-        }
+            // Überprüfen, ob die Koordinaten mit den gespeicherten Koordinaten übereinstimmen
+            if (location.getWorld().getName().equals(worldName) &&
+                    location.getBlockX() == x &&
+                    location.getBlockY() == y &&
+                    location.getBlockZ() == z) {
 
-        if (closestLocation != null) {
-            String worldName = closestLocation.getWorld().getName();
-            int x = closestLocation.getBlockX();
-            int y = closestLocation.getBlockY();
-            int z = closestLocation.getBlockZ();
-
-            String blockTypeKey = folder + "." + table + "." + x + "." + y + "." + z + ".type";
-            String blockDataKey = folder + "." + table + "." + x + "." + y + "." + z + ".data";
-
-            if (properties.containsKey(blockTypeKey) && properties.containsKey(blockDataKey)) {
                 String blockType = properties.getProperty(blockTypeKey);
                 String blockData = properties.getProperty(blockDataKey);
 
                 World world = Bukkit.getWorld(worldName);
                 if (world != null) {
-                    Block block = world.getBlockAt(x, y, z);
+                    Block block = world.getBlockAt(location);
                     if (block != null) {
                         Material material = Material.getMaterial(blockType);
                         if (material != null) {
                             BlockData blockDataObj = Bukkit.createBlockData(blockData);
                             block.setBlockData(blockDataObj, false);
-                            return block;
+                            System.out.println("Block set successfully at location: " + location);
                         } else {
                             System.err.println("Invalid block type: " + blockType);
                         }
                     } else {
-                        System.err.println("Failed to get block at location: " + x + ", " + y + ", " + z);
+                        System.err.println("Failed to get block at location: " + location);
                     }
                 } else {
                     System.err.println("World not found: " + worldName);
                 }
             } else {
-                System.err.println("Block data not found for location: " + x + ", " + y + ", " + z);
+                System.err.println("No block found at location: " + location);
             }
         } else {
-            System.err.println("No closest location found for coordinate: " + coordinate.toString());
+            System.err.println("Block data not found for location: " + location);
         }
-        return null;
     }
 
     public List<Location> getAllBlockLocations(String folder, String table) {
