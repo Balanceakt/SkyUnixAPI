@@ -1,5 +1,5 @@
 name: SkyUnix
-version: 1.2.3
+version: 1.2.4
 main: com.github.jitpack.MainSkyUnix
 api-version: 1.20
 description: Skyunix-API
