@@ -36,7 +36,7 @@ dependencies {
 	<dependency>
 	    <groupId>com.github.Balanceakt</groupId>
 	    <artifactId>SkyUnixAPIBungeecord</artifactId>
-	    <version>1.1.2</version>
+	    <version>1.2.8</version>
 	</dependency>
 
 readSimpleArgs: This method reads a simple value from a specified table and key in a file. You can also specify an index to retrieve a specific value from a comma-separated list of values.

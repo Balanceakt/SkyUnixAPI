@@ -228,66 +228,6 @@ public class SkyUnixHandleWorldBlock {
         return locations;
     }
 
-    public void setBlockAtCoordinate(String folder, String table, Location location) {
-        File folderFile = new File(FilePath.folderPath, folder);
-        File settingFile = new File(folderFile, table);
-        Properties properties = new Properties();
-
-        if (!settingFile.exists()) {
-            System.err.println("File not found: " + settingFile.getPath());
-            return;
-        }
-
-        try (InputStream input = new FileInputStream(settingFile)) {
-            properties.load(input);
-        } catch (IOException e) {
-            System.err.println("Failed to load block properties: " + e.getMessage());
-            return;
-        }
-
-        String blockTypeKey = folder + "." + table + ".type";
-        String blockDataKey = folder + "." + table + ".data";
-
-        if (properties.containsKey(blockTypeKey) && properties.containsKey(blockDataKey)) {
-            String worldName = properties.getProperty(folder + "." + table + ".world");
-            double x = Double.parseDouble(properties.getProperty(folder + "." + table + ".x"));
-            double y = Double.parseDouble(properties.getProperty(folder + "." + table + ".y"));
-            double z = Double.parseDouble(properties.getProperty(folder + "." + table + ".z"));
-
-            // Überprüfen, ob die Koordinaten mit den gespeicherten Koordinaten übereinstimmen
-            if (location.getWorld().getName().equals(worldName) &&
-                    location.getBlockX() == x &&
-                    location.getBlockY() == y &&
-                    location.getBlockZ() == z) {
-
-                String blockType = properties.getProperty(blockTypeKey);
-                String blockData = properties.getProperty(blockDataKey);
-
-                World world = Bukkit.getWorld(worldName);
-                if (world != null) {
-                    Block block = world.getBlockAt(location);
-                    if (block != null) {
-                        Material material = Material.getMaterial(blockType);
-                        if (material != null) {
-                            BlockData blockDataObj = Bukkit.createBlockData(blockData);
-                            block.setBlockData(blockDataObj, false);
-                            System.out.println("Block set successfully at location: " + location);
-                        } else {
-                            System.err.println("Invalid block type: " + blockType);
-                        }
-                    } else {
-                        System.err.println("Failed to get block at location: " + location);
-                    }
-                } else {
-                    System.err.println("World not found: " + worldName);
-                }
-            } else {
-                System.err.println("No block found at location: " + location);
-            }
-        } else {
-            System.err.println("Block data not found for location: " + location);
-        }
-    }
 
     public List<Location> getAllBlockLocations(String folder, String table) {
         List<Location> locations = new ArrayList<>();
@@ -323,6 +263,96 @@ public class SkyUnixHandleWorldBlock {
             }
         }
         return locations;
+    }
+
+    public String findBlockKeyByLocation(String folder, String table, Location location) {
+        File folderFile = new File(FilePath.folderPath, folder);
+        File settingFile = new File(folderFile, table);
+        Properties properties = new Properties();
+
+        if (!settingFile.exists()) {
+            System.err.println("File not found: " + settingFile.getPath());
+            return null;
+        }
+
+        try (InputStream input = new FileInputStream(settingFile)) {
+            properties.load(input);
+        } catch (IOException e) {
+            System.err.println("Failed to load block properties: " + e.getMessage());
+            return null;
+        }
+
+        for (String key : properties.stringPropertyNames()) {
+            if (key.endsWith(".world")) {
+                String worldName = properties.getProperty(key);
+                double x = Double.parseDouble(properties.getProperty(key.replace(".world", ".x")));
+                double y = Double.parseDouble(properties.getProperty(key.replace(".world", ".y")));
+                double z = Double.parseDouble(properties.getProperty(key.replace(".world", ".z")));
+
+                World world = Bukkit.getWorld(worldName);
+                if (world != null && location.getWorld().equals(world)
+                        && location.getX() == x && location.getY() == y && location.getZ() == z) {
+                    // Wenn die Position übereinstimmt, geben Sie den Teil vor ".world" des Schlüssels zurück
+                    int lastDotIndex = key.lastIndexOf(".");
+                    return key.substring(0, lastDotIndex);
+                }
+            }
+        }
+
+        // Wenn keine Übereinstimmung gefunden wurde
+        return null;
+    }
+
+    public void setBlockByLocation(String folder, String table, Location location) {
+        String key = findBlockKeyByLocation(folder, table, location);
+
+        if (key != null) {
+            File folderFile = new File(FilePath.folderPath, folder);
+            File settingFile = new File(folderFile, table);
+            Properties properties = new Properties();
+
+            try (InputStream input = new FileInputStream(settingFile)) {
+                properties.load(input);
+            } catch (IOException e) {
+                System.err.println("Failed to load block properties: " + e.getMessage());
+                return;
+            }
+
+            String worldName = properties.getProperty(key + ".world");
+            double x = Double.parseDouble(properties.getProperty(key + ".x"));
+            double y = Double.parseDouble(properties.getProperty(key + ".y"));
+            double z = Double.parseDouble(properties.getProperty(key + ".z"));
+            String type = properties.getProperty(key + ".type");
+            String data = properties.getProperty(key + ".data");
+            String direction = properties.getProperty(key + ".direction");
+
+            World world = Bukkit.getWorld(worldName);
+            if (world != null) {
+                Block block = world.getBlockAt((int) x, (int) y, (int) z);
+
+                try {
+                    block.setType(Material.matchMaterial(type));
+
+                    // Blockdaten verarbeiten (falls vorhanden)
+                    if (data != null && !data.isEmpty()) {
+                        BlockData blockData = Bukkit.createBlockData(data);
+                        block.setBlockData(blockData);
+                    }
+
+                    // Blockrichtung verarbeiten (falls vorhanden)
+                    if (direction != null && !direction.isEmpty()) {
+                        BlockFace blockFace = BlockFace.valueOf(direction);
+                        block = block.getRelative(blockFace);
+                    }
+                } catch (Exception e) {
+                    System.err.println("Fehler beim Setzen des Blocks: " + e.getMessage());
+                }
+            } else {
+                System.err.println("World not found: " + worldName);
+            }
+        } else {
+            System.err.println("Block not found at location: " + location);
+        }
     }
 
 }
