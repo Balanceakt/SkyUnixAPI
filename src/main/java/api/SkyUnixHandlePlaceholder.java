@@ -9,6 +9,17 @@ import java.io.InputStream;
 import java.util.Properties;
 
 public class SkyUnixHandlePlaceholder extends FileHandle {
+
+    /**
+     * Reads a message with placeholders from a specified table and key within a folder.
+     *
+     * @param folder       The name of the folder containing the table.
+     * @param table        The name of the table.
+     * @param key          The key corresponding to the message in the table.
+     * @param argIndex     The index of the message in the comma-separated values.
+     * @param placeholders Optional placeholders to replace in the message.
+     * @return The message with replaced placeholders, or null if the folder, table, key, or message is not found.
+     */
     public String readMessageWithPlaceholders(String folder, String table, String key, int argIndex, String... placeholders) {
         File folderFile = new File(FilePath.folderPath, folder);
         File settingFile = new File(folderFile, table);
@@ -41,6 +52,13 @@ public class SkyUnixHandlePlaceholder extends FileHandle {
         }
     }
 
+    /**
+     * Replaces placeholders in a message with specified replacements.
+     *
+     * @param messageWithPlaceholders The message containing placeholders.
+     * @param replacements            The replacements for the placeholders.
+     * @return The message with replaced placeholders.
+     */
     private String replacePlaceholders(String messageWithPlaceholders, String... replacements) {
         for (int i = 0; i < replacements.length; i += 2) {
             if (i + 1 < replacements.length) {

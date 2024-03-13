@@ -7,6 +7,17 @@ import java.io.*;
 import java.util.*;
 
 public class SkyUnixHandleArgs extends FileHandle {
+
+    /**
+     * Reads a value from a properties file located in a specified folder and table based on a provided key.
+     *
+     * @param folder   The name of the folder containing the properties file.
+     * @param table    The name of the properties file.
+     * @param key      The key whose associated value is to be retrieved.
+     * @param argIndex The index of the value to retrieve if it's a comma-separated list.
+     * @return The value associated with the provided key, or null if the folder, table, or key is not found,
+     * or if an error occurs while reading the properties file.
+     */
     public String readSimpleArgs(final String folder, final String table, final String key, int argIndex) {
         File folderFile = new File(FilePath.folderPath, folder);
         File settingFile = new File(folderFile, table);
@@ -43,6 +54,14 @@ public class SkyUnixHandleArgs extends FileHandle {
         }
     }
 
+    /**
+     * Sets a value for a specified key in a properties file located in a specified folder and table.
+     *
+     * @param folder The name of the folder containing the properties file.
+     * @param table  The name of the properties file.
+     * @param key    The key for which the value is to be set.
+     * @param value  The value to set for the specified key.
+     */
     public void setSimpleArgValue(final String folder, final String table, final String key, final String value) {
         File folderFile = new File(FilePath.folderPath, folder);
         File settingFile = new File(folderFile, table);
@@ -66,6 +85,14 @@ public class SkyUnixHandleArgs extends FileHandle {
         }
     }
 
+    /**
+     * Sets multiple values for a specified key in a properties file located in a specified folder and table.
+     *
+     * @param folder The name of the folder containing the properties file.
+     * @param table  The name of the properties file.
+     * @param key    The key for which the values are to be set.
+     * @param values The list of values to set for the specified key.
+     */
     public void setSimpleArgsValues(final String folder, final String table, final String key, final List<String> values) {
         File folderFile = new File(FilePath.folderPath, folder);
         File settingFile = new File(folderFile, table);
@@ -101,6 +128,17 @@ public class SkyUnixHandleArgs extends FileHandle {
         }
     }
 
+    /**
+     * Reads a color code value from a properties file located in a specified folder and table based on a provided key
+     * and returns the color code at the specified index after converting color codes if necessary.
+     *
+     * @param folder   The name of the folder containing the properties file.
+     * @param table    The name of the properties file.
+     * @param key      The key whose associated value is to be retrieved.
+     * @param argIndex The index of the value to retrieve if it's a comma-separated list.
+     * @return The color code value at the specified index, or null if the folder, table, key is not found,
+     * or if an error occurs while reading the properties file.
+     */
     public String readColorCodes(final String folder, final String table, final String key, int argIndex) {
         File folderFile = new File(FilePath.folderPath, folder);
         File settingFile = new File(folderFile, table);
@@ -127,6 +165,16 @@ public class SkyUnixHandleArgs extends FileHandle {
         }
     }
 
+    /**
+     * Reads all values at the specified index from a properties file located in a specified folder and table
+     * and returns them as a list of strings.
+     *
+     * @param folder   The name of the folder containing the properties file.
+     * @param table    The name of the properties file.
+     * @param argIndex The index of the values to retrieve if they're comma-separated lists.
+     * @return A list containing values at the specified index from all keys, or null if the folder or table is not found,
+     * or if an error occurs while reading the properties file.
+     */
     public List<String> readAllArgsAtIndex(final String folder, final String table, int argIndex) {
         File folderFile = new File(FilePath.folderPath, folder);
         File settingFile = new File(folderFile, table);
@@ -159,6 +207,14 @@ public class SkyUnixHandleArgs extends FileHandle {
         }
     }
 
+    /**
+     * Reads the number of keys (entries) in a properties file located in a specified folder and table.
+     *
+     * @param folder The name of the folder containing the properties file.
+     * @param table  The name of the properties file.
+     * @return The number of keys in the properties file, or 0 if the folder or table is not found,
+     * or if an error occurs while reading the properties file.
+     */
     public int readTableCountKeys(final String folder, final String table) {
         File folderFile = new File(FilePath.folderPath, folder);
         File settingFile = new File(folderFile, table);
@@ -183,6 +239,14 @@ public class SkyUnixHandleArgs extends FileHandle {
         }
     }
 
+    /**
+     * Reads all keys (entries) from a properties file located in a specified folder and table.
+     *
+     * @param folder The name of the folder containing the properties file.
+     * @param table  The name of the properties file.
+     * @return A set containing all keys from the properties file, or null if the folder or table is not found,
+     * or if an error occurs while reading the properties file.
+     */
     public Set<String> readTableKeys(final String folder, final String table) {
         File folderFile = new File(FilePath.folderPath, folder);
         File settingFile = new File(folderFile, table);
@@ -210,6 +274,12 @@ public class SkyUnixHandleArgs extends FileHandle {
         return keys;
     }
 
+    /**
+     * Converts color codes in a string by replacing '&' with '§'.
+     *
+     * @param input The string containing color codes to be converted.
+     * @return The input string with color codes converted.
+     */
     private String convertColorCodes(String input) {
         return input.replace("&", "§");
     }

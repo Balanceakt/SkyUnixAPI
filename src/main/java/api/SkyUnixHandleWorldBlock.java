@@ -17,6 +17,14 @@ import java.util.Properties;
 
 public class SkyUnixHandleWorldBlock extends FileHandle {
 
+    /**
+     * Saves block properties to a table in a file.
+     *
+     * @param folder The name of the folder containing the table.
+     * @param table  The name of the table.
+     * @param key    The key within the table.
+     * @param block  The block to save.
+     */
     public void saveBlock(String folder, String table, String key, Block block) {
         File folderFile = new File(FilePath.folderPath, folder);
         File settingFile = new File(folderFile, table);
@@ -64,6 +72,14 @@ public class SkyUnixHandleWorldBlock extends FileHandle {
         }
     }
 
+    /**
+     * Loads blocks from a table in a file.
+     *
+     * @param folder The name of the folder containing the table.
+     * @param table  The name of the table.
+     * @param key    The key within the table.
+     * @return A list of loaded blocks.
+     */
     public List<Block> loadBlocks(String folder, String table, String key) {
         List<Block> blocks = new ArrayList<>();
         File folderFile = new File(FilePath.folderPath, folder);
@@ -106,6 +122,14 @@ public class SkyUnixHandleWorldBlock extends FileHandle {
         return blocks;
     }
 
+    /**
+     * Retrieves a list of block types associated with the specified key from the given folder and table.
+     *
+     * @param folder The folder containing the properties file.
+     * @param table  The name of the properties file.
+     * @param key    The key associated with the block types to retrieve.
+     * @return A list containing the block types.
+     */
     public List<String> getBlockTypes(String folder, String table, String key) {
         List<String> types = new ArrayList<>();
         File folderFile = new File(FilePath.folderPath, folder);
@@ -133,6 +157,14 @@ public class SkyUnixHandleWorldBlock extends FileHandle {
         return types;
     }
 
+    /**
+     * Retrieves a list of block data associated with the specified key from the given folder and table.
+     *
+     * @param folder The folder containing the properties file.
+     * @param table  The name of the properties file.
+     * @param key    The key associated with the block data to retrieve.
+     * @return A list containing the block data.
+     */
     public List<String> getBlockDataList(String folder, String table, String key) {
         List<String> dataList = new ArrayList<>();
         File folderFile = new File(FilePath.folderPath, folder);
@@ -187,6 +219,14 @@ public class SkyUnixHandleWorldBlock extends FileHandle {
         return directions;
     }
 
+    /**
+     * Retrieves a list of block locations associated with the specified key from the given folder and table.
+     *
+     * @param folder The folder containing the properties file.
+     * @param table  The name of the properties file.
+     * @param key    The key associated with the block locations to retrieve.
+     * @return A list containing the block locations.
+     */
     public List<Location> getBlockLocations(String folder, String table, String key) {
         List<Location> locations = new ArrayList<>();
         File folderFile = new File(FilePath.folderPath, folder);
@@ -224,7 +264,13 @@ public class SkyUnixHandleWorldBlock extends FileHandle {
         return locations;
     }
 
-
+    /**
+     * Retrieves a list of all block locations from the given folder and table.
+     *
+     * @param folder The folder containing the properties file.
+     * @param table  The name of the properties file.
+     * @return A list containing all block locations.
+     */
     public List<Location> getAllBlockLocations(String folder, String table) {
         List<Location> locations = new ArrayList<>();
         File folderFile = new File(FilePath.folderPath, folder);
@@ -261,6 +307,14 @@ public class SkyUnixHandleWorldBlock extends FileHandle {
         return locations;
     }
 
+    /**
+     * Finds the block key associated with the given location in the specified folder and table.
+     *
+     * @param folder   The folder containing the properties file.
+     * @param table    The name of the properties file.
+     * @param location The location of the block.
+     * @return The block key if found, or null if not found.
+     */
     public String findBlockKeyByLocation(String folder, String table, Location location) {
         File folderFile = new File(FilePath.folderPath, folder);
         File settingFile = new File(folderFile, table);
@@ -298,6 +352,13 @@ public class SkyUnixHandleWorldBlock extends FileHandle {
         return null;
     }
 
+    /**
+     * Sets the block at the given location based on the block key found in the specified folder and table.
+     *
+     * @param folder   The folder containing the properties file.
+     * @param table    The name of the properties file.
+     * @param location The location where the block should be set.
+     */
     public void setBlockByLocation(String folder, String table, Location location) {
         String key = findBlockKeyByLocation(folder, table, location);
 
@@ -349,5 +410,4 @@ public class SkyUnixHandleWorldBlock extends FileHandle {
             System.err.println("Block not found at location: " + location);
         }
     }
-
 }
