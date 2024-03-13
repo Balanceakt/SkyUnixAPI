@@ -8,14 +8,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
-public class MainSkyUnix extends JavaPlugin {
+public class SkyUnixAPI extends JavaPlugin {
 
     private static final Map<String, Object> instances = new ConcurrentHashMap<>();
-    private static MainSkyUnix instance;
+    private static SkyUnixAPI instance;
 
-    public static MainSkyUnix getInstance() {
+    public static SkyUnixAPI getInstance() {
         return instance;
     }
 
