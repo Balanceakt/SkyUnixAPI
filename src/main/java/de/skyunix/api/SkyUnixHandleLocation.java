@@ -1,10 +1,9 @@
-package api;
+package de.skyunix.api;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
-import utils.FilePath;
-import utils.FolderHandle;
+import de.skyunix.utils.FilePath;
 
 import java.io.*;
 import java.util.Properties;

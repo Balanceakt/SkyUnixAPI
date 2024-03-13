@@ -1,6 +1,6 @@
-package api;
+package de.skyunix.api;
 
-import utils.FilePath;
+import de.skyunix.utils.FilePath;
 
 import java.io.*;
 import java.util.ArrayList;

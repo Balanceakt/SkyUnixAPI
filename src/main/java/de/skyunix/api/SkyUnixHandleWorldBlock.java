@@ -1,4 +1,4 @@
-package api;
+package de.skyunix.api;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -7,8 +7,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
-import utils.FilePath;
-import utils.FolderHandle;
+import de.skyunix.utils.FilePath;
 
 import java.io.*;
 import java.util.ArrayList;

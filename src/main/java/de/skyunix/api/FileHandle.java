@@ -1,7 +1,7 @@
-package api;
+package de.skyunix.api;
 
-import utils.FilePath;
-import utils.FolderHandle;
+import de.skyunix.utils.FilePath;
+import de.skyunix.utils.FolderHandle;
 
 /**
  * An abstract class for handling files.

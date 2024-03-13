@@ -1,4 +1,4 @@
-package utils;
+package de.skyunix.utils;
 
 import java.io.File;
 

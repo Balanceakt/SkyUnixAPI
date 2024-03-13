@@ -1,6 +1,6 @@
 package com.github.jitpack;
 
-import api.*;
+import de.skyunix.api.*;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.reflections.Reflections;
 
@@ -55,7 +55,7 @@ public class SkyUnixAPI extends JavaPlugin {
      * Initializes the SkyUnixAPI plugin.
      */
     public void init() {
-        final Reflections reflections = new Reflections("api");
+        final Reflections reflections = new Reflections("de/skyunix/api");
         final Set<Class<? extends FileHandle>> classes = reflections.getSubTypesOf(FileHandle.class);
 
         for (final Class<?> clazz : classes) {
