@@ -1,19 +1,65 @@
-package api;
+package de.skyunix.api;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
-import utils.FilePath;
-import utils.FolderHandle;
+import de.skyunix.utils.FilePath;
 
 import java.io.*;
 import java.util.Properties;
 
-public class SkyUnixHandleLocation {
-    public SkyUnixHandleLocation() {
-        FolderHandle.folderCheck(FilePath.folderPath);
+public class SkyUnixHandleLocation extends FileHandle {
+
+    /**
+     * Retrieves coordinates (x, y, z) from a properties file located in a specified folder and table
+     * based on the provided key.
+     *
+     * @param folder The name of the folder containing the properties file.
+     * @param table  The name of the properties file.
+     * @param key    The key corresponding to the coordinates to be retrieved.
+     * @return An array containing the x, y, and z coordinates, or null if the folder, table, or key is not found,
+     * or if an error occurs while reading the properties file.
+     */
+    public static double[] getCoordinates(String folder, String table, String key) {
+        File folderFile = new File(FilePath.folderPath, folder);
+        File settingFile = new File(folderFile, table);
+        Properties properties = new Properties();
+        if (!settingFile.exists()) {
+            System.err.println("File not found: " + settingFile.getPath());
+            return null;
+        }
+        try (InputStream input = new FileInputStream(settingFile)) {
+            properties.load(input);
+        } catch (IOException e) {
+            System.err.println("Failed to load coordinates: " + e.getMessage());
+            return null;
+        }
+
+        String locationKey = key;
+        String xStr = properties.getProperty(locationKey + ".x");
+        String yStr = properties.getProperty(locationKey + ".y");
+        String zStr = properties.getProperty(locationKey + ".z");
+
+        if (xStr != null && yStr != null && zStr != null) {
+            double x = Double.parseDouble(xStr);
+            double y = Double.parseDouble(yStr);
+            double z = Double.parseDouble(zStr);
+
+            return new double[]{x, y, z};
+        } else {
+            System.err.println("Coordinates not found for key: " + key);
+            return null;
+        }
     }
 
+    /**
+     * Saves a location to a properties file located in a specified folder and table, associated with a given key.
+     *
+     * @param folder   The name of the folder containing the properties file.
+     * @param table    The name of the properties file.
+     * @param key      The key corresponding to the location to be saved.
+     * @param location The location to be saved.
+     */
     public void saveLocation(String folder, String table, String key, Location location) {
         File folderFile = new File(FilePath.folderPath, folder);
         File settingFile = new File(folderFile, table);
@@ -51,6 +97,15 @@ public class SkyUnixHandleLocation {
         }
     }
 
+    /**
+     * Loads a location from a properties file located in a specified folder and table, associated with a given key.
+     *
+     * @param folder The name of the folder containing the properties file.
+     * @param table  The name of the properties file.
+     * @param key    The key corresponding to the location to be loaded.
+     * @return The loaded location, or null if the folder, table, or key is not found,
+     * or if an error occurs while reading the properties file.
+     */
     public Location loadLocation(String folder, String table, String key) {
         File folderFile = new File(FilePath.folderPath, folder);
         File settingFile = new File(folderFile, table);
@@ -84,6 +139,16 @@ public class SkyUnixHandleLocation {
         }
     }
 
+    /**
+     * Retrieves the world associated with a location stored in a properties file located in a specified folder and table,
+     * based on the provided key.
+     *
+     * @param folder The name of the folder containing the properties file.
+     * @param table  The name of the properties file.
+     * @param key    The key corresponding to the location for which the world is to be retrieved.
+     * @return The world associated with the location, or null if the folder, table, or key is not found,
+     * or if an error occurs while reading the properties file.
+     */
     public World getWorldForLocation(String folder, String table, String key) {
         File folderFile = new File(FilePath.folderPath, folder);
         File settingFile = new File(folderFile, table);
@@ -101,37 +166,5 @@ public class SkyUnixHandleLocation {
         String locationKey = key;
         String worldName = properties.getProperty(locationKey + ".world");
         return Bukkit.getWorld(worldName);
-    }
-
-    public static double[] getCoordinates(String folder, String table, String key) {
-        File folderFile = new File(FilePath.folderPath, folder);
-        File settingFile = new File(folderFile, table);
-        Properties properties = new Properties();
-        if (!settingFile.exists()) {
-            System.err.println("File not found: " + settingFile.getPath());
-            return null;
-        }
-        try (InputStream input = new FileInputStream(settingFile)) {
-            properties.load(input);
-        } catch (IOException e) {
-            System.err.println("Failed to load coordinates: " + e.getMessage());
-            return null;
-        }
-
-        String locationKey = key;
-        String xStr = properties.getProperty(locationKey + ".x");
-        String yStr = properties.getProperty(locationKey + ".y");
-        String zStr = properties.getProperty(locationKey + ".z");
-
-        if (xStr != null && yStr != null && zStr != null) {
-            double x = Double.parseDouble(xStr);
-            double y = Double.parseDouble(yStr);
-            double z = Double.parseDouble(zStr);
-
-            return new double[]{x, y, z};
-        } else {
-            System.err.println("Coordinates not found for key: " + key);
-            return null;
-        }
     }
 }

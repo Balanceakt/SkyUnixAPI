@@ -1,4 +1,4 @@
-package api;
+package de.skyunix.api;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -7,20 +7,23 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
-import utils.FilePath;
-import utils.FolderHandle;
+import de.skyunix.utils.FilePath;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-public class SkyUnixHandleWorldBlock {
+public class SkyUnixHandleWorldBlock extends FileHandle {
 
-    public SkyUnixHandleWorldBlock() {
-        FolderHandle.folderCheck(FilePath.folderPath);
-    }
-
+    /**
+     * Saves block properties to a table in a file.
+     *
+     * @param folder The name of the folder containing the table.
+     * @param table  The name of the table.
+     * @param key    The key within the table.
+     * @param block  The block to save.
+     */
     public void saveBlock(String folder, String table, String key, Block block) {
         File folderFile = new File(FilePath.folderPath, folder);
         File settingFile = new File(folderFile, table);
@@ -54,7 +57,7 @@ public class SkyUnixHandleWorldBlock {
             properties.setProperty(blockKey + "." + count + ".y", String.valueOf(location.getY()));
             properties.setProperty(blockKey + "." + count + ".z", String.valueOf(location.getZ()));
             properties.setProperty(blockKey + "." + count + ".type", block.getType().toString());
-            properties.setProperty(blockKey + "." + count + ".data", String.valueOf(block.getBlockData().getAsString()));
+            properties.setProperty(blockKey + "." + count + ".data", block.getBlockData().getAsString());
             properties.setProperty(blockKey + "." + count + ".direction", block.getFace(block.getRelative(BlockFace.DOWN)).name());
 
             try (OutputStream output = new FileOutputStream(settingFile)) {
@@ -68,6 +71,14 @@ public class SkyUnixHandleWorldBlock {
         }
     }
 
+    /**
+     * Loads blocks from a table in a file.
+     *
+     * @param folder The name of the folder containing the table.
+     * @param table  The name of the table.
+     * @param key    The key within the table.
+     * @return A list of loaded blocks.
+     */
     public List<Block> loadBlocks(String folder, String table, String key) {
         List<Block> blocks = new ArrayList<>();
         File folderFile = new File(FilePath.folderPath, folder);
@@ -110,6 +121,14 @@ public class SkyUnixHandleWorldBlock {
         return blocks;
     }
 
+    /**
+     * Retrieves a list of block types associated with the specified key from the given folder and table.
+     *
+     * @param folder The folder containing the properties file.
+     * @param table  The name of the properties file.
+     * @param key    The key associated with the block types to retrieve.
+     * @return A list containing the block types.
+     */
     public List<String> getBlockTypes(String folder, String table, String key) {
         List<String> types = new ArrayList<>();
         File folderFile = new File(FilePath.folderPath, folder);
@@ -137,6 +156,14 @@ public class SkyUnixHandleWorldBlock {
         return types;
     }
 
+    /**
+     * Retrieves a list of block data associated with the specified key from the given folder and table.
+     *
+     * @param folder The folder containing the properties file.
+     * @param table  The name of the properties file.
+     * @param key    The key associated with the block data to retrieve.
+     * @return A list containing the block data.
+     */
     public List<String> getBlockDataList(String folder, String table, String key) {
         List<String> dataList = new ArrayList<>();
         File folderFile = new File(FilePath.folderPath, folder);
@@ -191,6 +218,14 @@ public class SkyUnixHandleWorldBlock {
         return directions;
     }
 
+    /**
+     * Retrieves a list of block locations associated with the specified key from the given folder and table.
+     *
+     * @param folder The folder containing the properties file.
+     * @param table  The name of the properties file.
+     * @param key    The key associated with the block locations to retrieve.
+     * @return A list containing the block locations.
+     */
     public List<Location> getBlockLocations(String folder, String table, String key) {
         List<Location> locations = new ArrayList<>();
         File folderFile = new File(FilePath.folderPath, folder);
@@ -228,7 +263,13 @@ public class SkyUnixHandleWorldBlock {
         return locations;
     }
 
-
+    /**
+     * Retrieves a list of all block locations from the given folder and table.
+     *
+     * @param folder The folder containing the properties file.
+     * @param table  The name of the properties file.
+     * @return A list containing all block locations.
+     */
     public List<Location> getAllBlockLocations(String folder, String table) {
         List<Location> locations = new ArrayList<>();
         File folderFile = new File(FilePath.folderPath, folder);
@@ -265,6 +306,14 @@ public class SkyUnixHandleWorldBlock {
         return locations;
     }
 
+    /**
+     * Finds the block key associated with the given location in the specified folder and table.
+     *
+     * @param folder   The folder containing the properties file.
+     * @param table    The name of the properties file.
+     * @param location The location of the block.
+     * @return The block key if found, or null if not found.
+     */
     public String findBlockKeyByLocation(String folder, String table, Location location) {
         File folderFile = new File(FilePath.folderPath, folder);
         File settingFile = new File(folderFile, table);
@@ -290,8 +339,7 @@ public class SkyUnixHandleWorldBlock {
                 double z = Double.parseDouble(properties.getProperty(key.replace(".world", ".z")));
 
                 World world = Bukkit.getWorld(worldName);
-                if (world != null && location.getWorld().equals(world)
-                        && location.getX() == x && location.getY() == y && location.getZ() == z) {
+                if (world != null && location.getWorld().equals(world) && location.getX() == x && location.getY() == y && location.getZ() == z) {
                     // Wenn die Position übereinstimmt, geben Sie den Teil vor ".world" des Schlüssels zurück
                     int lastDotIndex = key.lastIndexOf(".");
                     return key.substring(0, lastDotIndex);
@@ -303,6 +351,13 @@ public class SkyUnixHandleWorldBlock {
         return null;
     }
 
+    /**
+     * Sets the block at the given location based on the block key found in the specified folder and table.
+     *
+     * @param folder   The folder containing the properties file.
+     * @param table    The name of the properties file.
+     * @param location The location where the block should be set.
+     */
     public void setBlockByLocation(String folder, String table, Location location) {
         String key = findBlockKeyByLocation(folder, table, location);
 
@@ -354,5 +409,4 @@ public class SkyUnixHandleWorldBlock {
             System.err.println("Block not found at location: " + location);
         }
     }
-
 }

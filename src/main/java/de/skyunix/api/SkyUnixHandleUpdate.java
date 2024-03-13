@@ -1,6 +1,6 @@
-package api;
+package de.skyunix.api;
 
-import utils.FilePath;
+import de.skyunix.utils.FilePath;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -8,7 +8,17 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
-public class SkyUnixHandleUpdate {
+public class SkyUnixHandleUpdate extends FileHandle {
+
+    /**
+     * Replaces a value at a specified index within a comma-separated list of values in a table.
+     *
+     * @param folder         The name of the folder containing the table.
+     * @param table          The name of the table.
+     * @param key            The key within the table.
+     * @param indexToReplace The index of the value to replace.
+     * @param newValue       The new value to replace the existing one.
+     */
     public void replaceArgValue(final String folder, final String table, final String key, final int indexToReplace, final String newValue) {
         File folderFile = new File(FilePath.folderPath, folder);
         File settingFile = new File(folderFile, table);

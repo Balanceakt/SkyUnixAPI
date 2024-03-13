@@ -1,6 +1,6 @@
-package api;
+package de.skyunix.api;
 
-import utils.FilePath;
+import de.skyunix.utils.FilePath;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -8,7 +8,40 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
-public class SkyUnixHandleDelete {
+public class SkyUnixHandleDelete extends FileHandle {
+
+    /**
+     * Recursively deletes all contents of a given folder.
+     *
+     * @param folder The folder whose contents are to be deleted.
+     * @return True if all contents were successfully deleted, false otherwise.
+     */
+    private static boolean deleteContents(File folder) {
+        File[] files = folder.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    if (!deleteContents(file)) {
+                        return false;
+                    }
+                } else {
+                    if (!file.delete()) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return folder.delete();
+    }
+
+    /**
+     * Deletes a value at a specified index for a given key in a properties file located in a specified folder and table.
+     *
+     * @param folder        The name of the folder containing the properties file.
+     * @param table         The name of the properties file.
+     * @param key           The key for which the value is to be removed.
+     * @param indexToRemove The index of the value to remove if it's a comma-separated list.
+     */
     public void deleteArgValue(final String folder, final String table, final String key, final int indexToRemove) {
         File folderFile = new File(FilePath.folderPath, folder);
         File settingFile = new File(folderFile, table);
@@ -48,6 +81,13 @@ public class SkyUnixHandleDelete {
         }
     }
 
+    /**
+     * Deletes a key and its associated value from a properties file located in a specified folder and table.
+     *
+     * @param folder The name of the folder containing the properties file.
+     * @param table  The name of the properties file.
+     * @param key    The key to be deleted.
+     */
     public void deleteKey(final String folder, final String table, final String key) {
         File folderFile = new File(FilePath.folderPath, folder);
         File settingFile = new File(folderFile, table);
@@ -65,6 +105,12 @@ public class SkyUnixHandleDelete {
         }
     }
 
+    /**
+     * Deletes a properties file located in a specified folder.
+     *
+     * @param folder The name of the folder containing the properties file.
+     * @param table  The name of the properties file to be deleted.
+     */
     public void deleteTable(final String folder, final String table) {
         File folderFile = new File(FilePath.folderPath, folder);
         File fileToDelete = new File(folderFile, table);
@@ -79,6 +125,11 @@ public class SkyUnixHandleDelete {
         }
     }
 
+    /**
+     * Deletes a folder and its contents located in a specified path.
+     *
+     * @param folder The name of the folder to be deleted.
+     */
     public void deleteFolder(final String folder) {
         File folderToDelete = new File(FilePath.folderPath, folder);
         try {
@@ -94,23 +145,5 @@ public class SkyUnixHandleDelete {
         } catch (SecurityException e) {
             System.err.println("SecurityException: " + e.getMessage());
         }
-    }
-
-    private static boolean deleteContents(File folder) {
-        File[] files = folder.listFiles();
-        if (files != null) {
-            for (File file : files) {
-                if (file.isDirectory()) {
-                    if (!deleteContents(file)) {
-                        return false;
-                    }
-                } else {
-                    if (!file.delete()) {
-                        return false;
-                    }
-                }
-            }
-        }
-        return folder.delete();
     }
 }
