@@ -9,9 +9,38 @@ import utils.FolderHandle;
 import java.io.*;
 import java.util.Properties;
 
-public class SkyUnixHandleLocation {
-    public SkyUnixHandleLocation() {
-        FolderHandle.folderCheck(FilePath.folderPath);
+public class SkyUnixHandleLocation extends FileHandle {
+
+    public static double[] getCoordinates(String folder, String table, String key) {
+        File folderFile = new File(FilePath.folderPath, folder);
+        File settingFile = new File(folderFile, table);
+        Properties properties = new Properties();
+        if (!settingFile.exists()) {
+            System.err.println("File not found: " + settingFile.getPath());
+            return null;
+        }
+        try (InputStream input = new FileInputStream(settingFile)) {
+            properties.load(input);
+        } catch (IOException e) {
+            System.err.println("Failed to load coordinates: " + e.getMessage());
+            return null;
+        }
+
+        String locationKey = key;
+        String xStr = properties.getProperty(locationKey + ".x");
+        String yStr = properties.getProperty(locationKey + ".y");
+        String zStr = properties.getProperty(locationKey + ".z");
+
+        if (xStr != null && yStr != null && zStr != null) {
+            double x = Double.parseDouble(xStr);
+            double y = Double.parseDouble(yStr);
+            double z = Double.parseDouble(zStr);
+
+            return new double[]{x, y, z};
+        } else {
+            System.err.println("Coordinates not found for key: " + key);
+            return null;
+        }
     }
 
     public void saveLocation(String folder, String table, String key, Location location) {
@@ -101,37 +130,5 @@ public class SkyUnixHandleLocation {
         String locationKey = key;
         String worldName = properties.getProperty(locationKey + ".world");
         return Bukkit.getWorld(worldName);
-    }
-
-    public static double[] getCoordinates(String folder, String table, String key) {
-        File folderFile = new File(FilePath.folderPath, folder);
-        File settingFile = new File(folderFile, table);
-        Properties properties = new Properties();
-        if (!settingFile.exists()) {
-            System.err.println("File not found: " + settingFile.getPath());
-            return null;
-        }
-        try (InputStream input = new FileInputStream(settingFile)) {
-            properties.load(input);
-        } catch (IOException e) {
-            System.err.println("Failed to load coordinates: " + e.getMessage());
-            return null;
-        }
-
-        String locationKey = key;
-        String xStr = properties.getProperty(locationKey + ".x");
-        String yStr = properties.getProperty(locationKey + ".y");
-        String zStr = properties.getProperty(locationKey + ".z");
-
-        if (xStr != null && yStr != null && zStr != null) {
-            double x = Double.parseDouble(xStr);
-            double y = Double.parseDouble(yStr);
-            double z = Double.parseDouble(zStr);
-
-            return new double[]{x, y, z};
-        } else {
-            System.err.println("Coordinates not found for key: " + key);
-            return null;
-        }
     }
 }

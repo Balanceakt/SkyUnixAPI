@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
-public class SkyUnixHandleUpdate {
+public class SkyUnixHandleUpdate extends FileHandle {
     public void replaceArgValue(final String folder, final String table, final String key, final int indexToReplace, final String newValue) {
         File folderFile = new File(FilePath.folderPath, folder);
         File settingFile = new File(folderFile, table);

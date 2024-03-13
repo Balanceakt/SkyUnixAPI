@@ -15,11 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-public class SkyUnixHandleWorldBlock {
-
-    public SkyUnixHandleWorldBlock() {
-        FolderHandle.folderCheck(FilePath.folderPath);
-    }
+public class SkyUnixHandleWorldBlock extends FileHandle {
 
     public void saveBlock(String folder, String table, String key, Block block) {
         File folderFile = new File(FilePath.folderPath, folder);
@@ -54,7 +50,7 @@ public class SkyUnixHandleWorldBlock {
             properties.setProperty(blockKey + "." + count + ".y", String.valueOf(location.getY()));
             properties.setProperty(blockKey + "." + count + ".z", String.valueOf(location.getZ()));
             properties.setProperty(blockKey + "." + count + ".type", block.getType().toString());
-            properties.setProperty(blockKey + "." + count + ".data", String.valueOf(block.getBlockData().getAsString()));
+            properties.setProperty(blockKey + "." + count + ".data", block.getBlockData().getAsString());
             properties.setProperty(blockKey + "." + count + ".direction", block.getFace(block.getRelative(BlockFace.DOWN)).name());
 
             try (OutputStream output = new FileOutputStream(settingFile)) {
@@ -290,8 +286,7 @@ public class SkyUnixHandleWorldBlock {
                 double z = Double.parseDouble(properties.getProperty(key.replace(".world", ".z")));
 
                 World world = Bukkit.getWorld(worldName);
-                if (world != null && location.getWorld().equals(world)
-                        && location.getX() == x && location.getY() == y && location.getZ() == z) {
+                if (world != null && location.getWorld().equals(world) && location.getX() == x && location.getY() == y && location.getZ() == z) {
                     // Wenn die Position übereinstimmt, geben Sie den Teil vor ".world" des Schlüssels zurück
                     int lastDotIndex = key.lastIndexOf(".");
                     return key.substring(0, lastDotIndex);

@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
-public class SkyUnixHandleDelete {
+public class SkyUnixHandleDelete extends FileHandle {
     public void deleteArgValue(final String folder, final String table, final String key, final int indexToRemove) {
         File folderFile = new File(FilePath.folderPath, folder);
         File settingFile = new File(folderFile, table);

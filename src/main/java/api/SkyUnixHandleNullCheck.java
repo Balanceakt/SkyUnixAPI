@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
-public class SkyUnixHandleNullCheck {
+public class SkyUnixHandleNullCheck extends FileHandle {
 
     public boolean isFolderExists(String folder) {
         File folderFile = new File(FilePath.folderPath, folder);

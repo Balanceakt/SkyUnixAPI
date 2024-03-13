@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-public class SkyUnixHandlePlaceholder {
+public class SkyUnixHandlePlaceholder extends FileHandle {
     public String readMessageWithPlaceholders(String folder, String table, String key, int argIndex, String... placeholders) {
         File folderFile = new File(FilePath.folderPath, folder);
         File settingFile = new File(folderFile, table);
@@ -40,6 +40,7 @@ public class SkyUnixHandlePlaceholder {
             return null;
         }
     }
+
     private String replacePlaceholders(String messageWithPlaceholders, String... replacements) {
         for (int i = 0; i < replacements.length; i += 2) {
             if (i + 1 < replacements.length) {

@@ -6,10 +6,7 @@ import utils.FolderHandle;
 import java.io.*;
 import java.util.*;
 
-public class SkyUnixHandleArgs {
-    public SkyUnixHandleArgs() {
-        FolderHandle.folderCheck(FilePath.folderPath);
-    }
+public class SkyUnixHandleArgs extends FileHandle {
     public String readSimpleArgs(final String folder, final String table, final String key, int argIndex) {
         File folderFile = new File(FilePath.folderPath, folder);
         File settingFile = new File(folderFile, table);
