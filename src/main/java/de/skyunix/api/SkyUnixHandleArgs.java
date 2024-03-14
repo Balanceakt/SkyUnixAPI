@@ -1,11 +1,13 @@
 package de.skyunix.api;
 
+import de.skyunix.api.abstraction.FileHandle;
+import de.skyunix.api.abstraction.IArgs;
 import de.skyunix.utils.FilePath;
 
 import java.io.*;
 import java.util.*;
 
-public class SkyUnixHandleArgs extends FileHandle {
+public class SkyUnixHandleArgs extends FileHandle implements IArgs {
 
     /**
      * Reads a value from a properties file located in a specified folder and table based on a provided key.
@@ -17,6 +19,7 @@ public class SkyUnixHandleArgs extends FileHandle {
      * @return The value associated with the provided key, or null if the folder, table, or key is not found,
      * or if an error occurs while reading the properties file.
      */
+    @Override
     public String readSimpleArgs(final String folder, final String table, final String key, int argIndex) {
         File folderFile = new File(FilePath.folderPath, folder);
         File settingFile = new File(folderFile, table);
@@ -54,14 +57,14 @@ public class SkyUnixHandleArgs extends FileHandle {
     }
 
     /**
-     * Sets a value for a specified key in a properties file located in a specified folder and table.
+     * Sets a value for a specific key in a properties file located within a specified folder and table.
      *
-     * @param folder The name of the folder containing the properties file.
+     * @param folder The name of the folder where the properties file resides.
      * @param table  The name of the properties file.
-     * @param key    The key for which the value is to be set.
-     * @param value  The value to set for the specified key.
+     * @param key    The key whose value needs to be set.
+     * @param value  The value(s) to be associated with the key. Can be multiple values.
      */
-    public void setSimpleArgValue(final String folder, final String table, final String key, final String value) {
+    public void setSimpleArgValue(final String folder, final String table, final String key, final String... value) {
         File folderFile = new File(FilePath.folderPath, folder);
         File settingFile = new File(folderFile, table);
         Properties properties = new Properties();
@@ -75,55 +78,12 @@ public class SkyUnixHandleArgs extends FileHandle {
             try (InputStream input = new FileInputStream(settingFile)) {
                 properties.load(input);
             }
-            properties.setProperty(key, value);
+            properties.setProperty(key, String.join(",", value));
             try (OutputStream output = new FileOutputStream(settingFile)) {
                 properties.store(output, "Updated by setSetting method");
             }
         } catch (IOException e) {
             System.err.println("An error occurred: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Sets multiple values for a specified key in a properties file located in a specified folder and table.
-     *
-     * @param folder The name of the folder containing the properties file.
-     * @param table  The name of the properties file.
-     * @param key    The key for which the values are to be set.
-     * @param values The list of values to set for the specified key.
-     */
-    public void setSimpleArgsValues(final String folder, final String table, final String key, final List<String> values) {
-        File folderFile = new File(FilePath.folderPath, folder);
-        File settingFile = new File(folderFile, table);
-        Properties properties = new Properties();
-        if (!folderFile.exists() && !folderFile.mkdirs()) {
-            System.err.println("Failed to create folder: " + folderFile.getAbsolutePath());
-            return;
-        }
-        if (!settingFile.exists()) {
-            try {
-                if (settingFile.createNewFile()) {
-                    System.out.println("File created: " + settingFile.getAbsolutePath());
-                } else {
-                    System.err.println("Failed to create file: " + settingFile.getAbsolutePath());
-                    return;
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-                return;
-            }
-        }
-        try (InputStream input = new FileInputStream(settingFile)) {
-            properties.load(input);
-            properties.setProperty(key, String.join(",", values));
-        } catch (IOException e) {
-            e.printStackTrace();
-            return;
-        }
-        try (OutputStream output = new FileOutputStream(settingFile)) {
-            properties.store(output, "Updated by setSimpleArgsValues method");
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 

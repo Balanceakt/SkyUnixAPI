@@ -1,6 +1,8 @@
 package com.github.jitpack;
 
 import de.skyunix.api.*;
+import de.skyunix.api.abstraction.FileHandle;
+import de.skyunix.api.abstraction.IArgs;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.reflections.Reflections;
 
@@ -75,8 +77,8 @@ public class SkyUnixAPI extends JavaPlugin {
      *
      * @return The instance of SkyUnixHandleArgs.
      */
-    public Object argsInstance() {
-        return instances.get(SkyUnixHandleArgs.class.getSimpleName());
+    public IArgs argsInstance() {
+        return (IArgs) instances.get(SkyUnixHandleArgs.class.getSimpleName());
     }
 
     /**
