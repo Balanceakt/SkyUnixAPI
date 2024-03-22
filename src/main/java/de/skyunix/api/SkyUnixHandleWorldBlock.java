@@ -409,4 +409,42 @@ public class SkyUnixHandleWorldBlock extends FileHandle {
             System.err.println("Block not found at location: " + location);
         }
     }
+
+    /**
+     * Gets the block type at the given location based on the block key found in the specified folder and table.
+     *
+     * @param folder   The folder containing the properties file.
+     * @param table    The name of the properties file.
+     * @param location The location to get the block type.
+     * @return The Material representing the block type at the specified location, or null if not found.
+     */
+    public Material getBlockTypeByLocation(String folder, String table, Location location) {
+        String key = findBlockKeyByLocation(folder, table, location);
+
+        if (key != null) {
+            File folderFile = new File(FilePath.folderPath, folder);
+            File settingFile = new File(folderFile, table);
+            Properties properties = new Properties();
+
+            try (InputStream input = new FileInputStream(settingFile)) {
+                properties.load(input);
+            } catch (IOException e) {
+                System.err.println("Failed to load block properties: " + e.getMessage());
+                return null;
+            }
+
+            String type = properties.getProperty(key + ".type");
+
+            try {
+                return Material.matchMaterial(type);
+            } catch (Exception e) {
+                System.err.println("Fehler beim Ermitteln des Blocktyps: " + e.getMessage());
+                return null;
+            }
+        } else {
+            System.err.println("Block not found at location: " + location);
+            return null;
+        }
+    }
+
 }
