@@ -340,7 +340,6 @@ public class SkyUnixHandleWorldBlock extends FileHandle {
 
                 World world = Bukkit.getWorld(worldName);
                 if (world != null && location.getWorld().equals(world) && location.getX() == x && location.getY() == y && location.getZ() == z) {
-                    // Wenn die Position übereinstimmt, geben Sie den Teil vor ".world" des Schlüssels zurück
                     int lastDotIndex = key.lastIndexOf(".");
                     return key.substring(0, lastDotIndex);
                 }

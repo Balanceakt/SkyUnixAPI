@@ -146,4 +146,32 @@ public class SkyUnixHandleDelete extends FileHandle {
             System.err.println("SecurityException: " + e.getMessage());
         }
     }
+
+    public void deleteKeys(final String folder, final String table, final String key) {
+        File folderFile = new File(FilePath.folderPath, folder);
+        File settingFile = new File(folderFile, table);
+        Properties properties = new Properties();
+        try (InputStream input = new FileInputStream(settingFile)) {
+            properties.load(input);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        List<String> keysToRemove = new ArrayList<>();
+        for (String key1 : properties.stringPropertyNames()) {
+            if (key1.startsWith(key + ".")) {
+                keysToRemove.add(key1);
+            }
+        }
+
+        for (String key1 : keysToRemove) {
+            properties.remove(key1);
+        }
+
+        try (OutputStream output = new FileOutputStream(settingFile)) {
+            properties.store(output, "Updated by deleteBlocks method");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
