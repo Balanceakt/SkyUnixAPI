@@ -247,10 +247,20 @@ public class SkyUnixHandleWorldBlock extends FileHandle {
         String blockKey = key;
         int count = 0;
         while (properties.containsKey(blockKey + "." + count + ".world")) {
-            String worldName = properties.getProperty(blockKey + "." + count + ".world");
-            double x = Double.parseDouble(properties.getProperty(blockKey + "." + count + ".x"));
-            double y = Double.parseDouble(properties.getProperty(blockKey + "." + count + ".y"));
-            double z = Double.parseDouble(properties.getProperty(blockKey + "." + count + ".z"));
+            count++;
+        }
+
+        if (count == 0) {
+            System.err.println("No blocks found for key: " + key);
+            return locations;
+        }
+
+        for (int i = 0; i < count; i++) {
+            String propertyKey = blockKey + "." + i;
+            String worldName = properties.getProperty(propertyKey + ".world");
+            double x = Double.parseDouble(properties.getProperty(propertyKey + ".x"));
+            double y = Double.parseDouble(properties.getProperty(propertyKey + ".y"));
+            double z = Double.parseDouble(properties.getProperty(propertyKey + ".z"));
 
             World world = Bukkit.getWorld(worldName);
             if (world != null) {
@@ -258,10 +268,10 @@ public class SkyUnixHandleWorldBlock extends FileHandle {
             } else {
                 System.err.println("World not found: " + worldName);
             }
-            count++;
         }
         return locations;
     }
+
 
     /**
      * Retrieves a list of all block locations from the given folder and table.

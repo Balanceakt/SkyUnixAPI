@@ -29,7 +29,11 @@ dependencies {
 <dependency>
     <groupId>com.github.Balanceakt</groupId>
     <artifactId>SkyUnixAPIBungeecord</artifactId>
+<<<<<<< HEAD
     <version>1.3.3</version>
+=======
+    <version>1.3.3</version>
+>>>>>>> 9a58d8b17b474d899173e03dc912de5263dcbb6a
 </dependency>
 ````
 
