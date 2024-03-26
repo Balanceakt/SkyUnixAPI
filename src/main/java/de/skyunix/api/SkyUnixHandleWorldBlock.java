@@ -244,33 +244,36 @@ public class SkyUnixHandleWorldBlock extends FileHandle {
             return locations;
         }
 
-        String blockKey = key;
-        int count = 0;
-        while (properties.containsKey(blockKey + "." + count + ".world")) {
-            count++;
-        }
+        // Durchlaufe alle Schlüssel in den Properties
+        for (String currentKey : properties.stringPropertyNames()) {
+            // Überprüfe, ob der Schlüssel dem gewünschten Muster entspricht
+            if (currentKey.startsWith(key + ".") && currentKey.endsWith(".world")) {
+                String worldName = properties.getProperty(currentKey);
+                String xValue = properties.getProperty(currentKey.replace(".world", ".x"));
+                String yValue = properties.getProperty(currentKey.replace(".world", ".y"));
+                String zValue = properties.getProperty(currentKey.replace(".world", ".z"));
 
-        if (count == 0) {
-            System.err.println("No blocks found for key: " + key);
-            return locations;
-        }
+                if (worldName != null && xValue != null && yValue != null && zValue != null) {
+                    double x = Double.parseDouble(xValue);
+                    double y = Double.parseDouble(yValue);
+                    double z = Double.parseDouble(zValue);
 
-        for (int i = 0; i < count; i++) {
-            String propertyKey = blockKey + "." + i;
-            String worldName = properties.getProperty(propertyKey + ".world");
-            double x = Double.parseDouble(properties.getProperty(propertyKey + ".x"));
-            double y = Double.parseDouble(properties.getProperty(propertyKey + ".y"));
-            double z = Double.parseDouble(properties.getProperty(propertyKey + ".z"));
-
-            World world = Bukkit.getWorld(worldName);
-            if (world != null) {
-                locations.add(new Location(world, x, y, z));
-            } else {
-                System.err.println("World not found: " + worldName);
+                    World world = Bukkit.getWorld(worldName);
+                    if (world != null) {
+                        locations.add(new Location(world, x, y, z));
+                    } else {
+                        System.err.println("World not found: " + worldName);
+                    }
+                } else {
+                    System.err.println("One or more properties are null for key: " + currentKey);
+                }
             }
         }
+
         return locations;
     }
+
+
 
 
     /**
