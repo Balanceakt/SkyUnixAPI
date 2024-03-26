@@ -446,4 +446,37 @@ public class SkyUnixHandleWorldBlock extends FileHandle {
         }
     }
 
+    /**
+     * Deletes all entries for blocks with the specified key from the file.
+     *
+     * @param folder The name of the folder containing the table.
+     * @param table  The name of the table.
+     * @param key    The key within the table.
+     */
+    public void deleteBlocks(String folder, String table, String key) {
+        File folderFile = new File(FilePath.folderPath, folder);
+        File settingFile = new File(folderFile, table);
+        Properties properties = new Properties();
+
+        if (!settingFile.exists()) {
+            System.err.println("Datei nicht gefunden: " + settingFile.getPath());
+            return;
+        }
+        try (InputStream input = new FileInputStream(settingFile)) {
+            properties.load(input);
+        } catch (IOException e) {
+            System.err.println("Fehler beim Laden der Blockeigenschaften: " + e.getMessage());
+            return;
+        }
+        properties.entrySet().removeIf(entry -> {
+            String propertyKey = (String) entry.getKey();
+            return propertyKey.startsWith(key + ".");
+        });
+        try (OutputStream output = new FileOutputStream(settingFile)) {
+            properties.store(output, "Aktualisiert durch deleteBlocks-Methode");
+            System.out.println("Blöcke erfolgreich gelöscht: " + key);
+        } catch (IOException e) {
+            System.err.println("Fehler beim Speichern der Blöcke: " + e.getMessage());
+        }
+    }
 }
