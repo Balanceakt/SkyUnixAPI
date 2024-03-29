@@ -145,6 +145,15 @@ public class SkyUnixAPI extends JavaPlugin {
     }
 
     /**
+     * Retrieves the instance of SkyUnixHandlePlayerStats.
+     *
+     * @return The instance of SkyUnixHandlePlayerStats.
+     */
+    public SkyUnixHandlePlayerStats playerStatsInstance() {
+        return (SkyUnixHandlePlayerStats) instances.get(SkyUnixHandlePlayerStats.class.getSimpleName());
+    }
+
+    /**
      * Registers a class instance.
      *
      * @param instance The instance of the class to register.
