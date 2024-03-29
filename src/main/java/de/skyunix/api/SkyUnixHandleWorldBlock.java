@@ -245,24 +245,37 @@ public class SkyUnixHandleWorldBlock extends FileHandle {
             return locations;
         }
 
-        String blockKey = key;
-        int count = 0;
-        while (properties.containsKey(blockKey + "." + count + ".world")) {
-            String worldName = properties.getProperty(blockKey + "." + count + ".world");
-            double x = Double.parseDouble(properties.getProperty(blockKey + "." + count + ".x"));
-            double y = Double.parseDouble(properties.getProperty(blockKey + "." + count + ".y"));
-            double z = Double.parseDouble(properties.getProperty(blockKey + "." + count + ".z"));
+        // Durchlaufe alle Schlüssel in den Properties
+        for (String currentKey : properties.stringPropertyNames()) {
+            // Überprüfe, ob der Schlüssel dem gewünschten Muster entspricht
+            if (currentKey.startsWith(key + ".") && currentKey.endsWith(".world")) {
+                String worldName = properties.getProperty(currentKey);
+                String xValue = properties.getProperty(currentKey.replace(".world", ".x"));
+                String yValue = properties.getProperty(currentKey.replace(".world", ".y"));
+                String zValue = properties.getProperty(currentKey.replace(".world", ".z"));
 
-            World world = Bukkit.getWorld(worldName);
-            if (world != null) {
-                locations.add(new Location(world, x, y, z));
-            } else {
-                System.err.println("World not found: " + worldName);
+                if (worldName != null && xValue != null && yValue != null && zValue != null) {
+                    double x = Double.parseDouble(xValue);
+                    double y = Double.parseDouble(yValue);
+                    double z = Double.parseDouble(zValue);
+
+                    World world = Bukkit.getWorld(worldName);
+                    if (world != null) {
+                        locations.add(new Location(world, x, y, z));
+                    } else {
+                        System.err.println("World not found: " + worldName);
+                    }
+                } else {
+                    System.err.println("One or more properties are null for key: " + currentKey);
+                }
             }
-            count++;
         }
+
         return locations;
     }
+
+
+
 
     /**
      * Retrieves a list of all block locations from the given folder and table.
@@ -341,7 +354,6 @@ public class SkyUnixHandleWorldBlock extends FileHandle {
 
                 World world = Bukkit.getWorld(worldName);
                 if (world != null && location.getWorld().equals(world) && location.getX() == x && location.getY() == y && location.getZ() == z) {
-                    // Wenn die Position übereinstimmt, geben Sie den Teil vor ".world" des Schlüssels zurück
                     int lastDotIndex = key.lastIndexOf(".");
                     return key.substring(0, lastDotIndex);
                 }
@@ -408,6 +420,77 @@ public class SkyUnixHandleWorldBlock extends FileHandle {
             }
         } else {
             System.err.println("Block not found at location: " + location);
+        }
+    }
+
+    /**
+     * Gets the block type at the given location based on the block key found in the specified folder and table.
+     *
+     * @param folder   The folder containing the properties file.
+     * @param table    The name of the properties file.
+     * @param location The location to get the block type.
+     * @return The Material representing the block type at the specified location, or null if not found.
+     */
+    public Material getBlockTypeByLocation(String folder, String table, Location location) {
+        String key = findBlockKeyByLocation(folder, table, location);
+
+        if (key != null) {
+            File folderFile = new File(FilePath.folderPath, folder);
+            File settingFile = new File(folderFile, table);
+            Properties properties = new Properties();
+
+            try (InputStream input = new FileInputStream(settingFile)) {
+                properties.load(input);
+            } catch (IOException e) {
+                System.err.println("Failed to load block properties: " + e.getMessage());
+                return null;
+            }
+
+            String type = properties.getProperty(key + ".type");
+
+            try {
+                return Material.matchMaterial(type);
+            } catch (Exception e) {
+                System.err.println("Fehler beim Ermitteln des Blocktyps: " + e.getMessage());
+                return null;
+            }
+        } else {
+            System.err.println("Block not found at location: " + location);
+            return null;
+        }
+    }
+
+    /**
+     * Deletes all entries for blocks with the specified key from the file.
+     *
+     * @param folder The name of the folder containing the table.
+     * @param table  The name of the table.
+     * @param key    The key within the table.
+     */
+    public void deleteBlocks(String folder, String table, String key) {
+        File folderFile = new File(FilePath.folderPath, folder);
+        File settingFile = new File(folderFile, table);
+        Properties properties = new Properties();
+
+        if (!settingFile.exists()) {
+            System.err.println("Datei nicht gefunden: " + settingFile.getPath());
+            return;
+        }
+        try (InputStream input = new FileInputStream(settingFile)) {
+            properties.load(input);
+        } catch (IOException e) {
+            System.err.println("Fehler beim Laden der Blockeigenschaften: " + e.getMessage());
+            return;
+        }
+        properties.entrySet().removeIf(entry -> {
+            String propertyKey = (String) entry.getKey();
+            return propertyKey.startsWith(key + ".");
+        });
+        try (OutputStream output = new FileOutputStream(settingFile)) {
+            properties.store(output, "Aktualisiert durch deleteBlocks-Methode");
+            System.out.println("Blöcke erfolgreich gelöscht: " + key);
+        } catch (IOException e) {
+            System.err.println("Fehler beim Speichern der Blöcke: " + e.getMessage());
         }
     }
 }

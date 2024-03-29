@@ -29,7 +29,11 @@ dependencies {
 <dependency>
     <groupId>com.github.Balanceakt</groupId>
     <artifactId>SkyUnixAPIBungeecord</artifactId>
-    <version>1.2.9</version>
+<<<<<<< HEAD
+    <version>1.3.5</version>
+=======
+    <version>1.3.5</version>
+>>>>>>> 9a58d8b17b474d899173e03dc912de5263dcbb6a
 </dependency>
 ````
 
@@ -146,3 +150,5 @@ SkyUnixHandlePlaceholder simplePlaceHolder = SkyUnixAPI.getInstance().placeholde
 **getBlockDataList:** *no description*
 
 **getBlockDataList:** *no description*
+
+**deleteBlocks:** *no description*
