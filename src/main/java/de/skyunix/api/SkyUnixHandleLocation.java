@@ -21,7 +21,7 @@ public class SkyUnixHandleLocation extends FileHandle {
      * @return An array containing the x, y, and z coordinates, or null if the folder, table, or key is not found,
      * or if an error occurs while reading the properties file.
      */
-    public static double[] getCoordinates(String folder, String table, String key) {
+    public double[] getCoordinates(String folder, String table, String key) {
         File folderFile = new File(FilePath.folderPath, folder);
         File settingFile = new File(folderFile, table);
         Properties properties = new Properties();
