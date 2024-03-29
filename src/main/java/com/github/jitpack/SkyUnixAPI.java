@@ -1,6 +1,8 @@
 package com.github.jitpack;
 
 import de.skyunix.api.*;
+import de.skyunix.api.abstraction.FileHandle;
+import de.skyunix.api.abstraction.IArgs;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.reflections.Reflections;
 
@@ -75,8 +77,17 @@ public class SkyUnixAPI extends JavaPlugin {
      *
      * @return The instance of SkyUnixHandleArgs.
      */
-    public Object argsInstance() {
-        return instances.get(SkyUnixHandleArgs.class.getSimpleName());
+    public IArgs argsInstance() {
+        return (IArgs) instances.get(SkyUnixHandleArgs.class.getSimpleName());
+    }
+
+    /**
+     * Retrieves the instance of SkyUnixHandleArgs.
+     *
+     * @return The instance of SkyUnixHandleArgs.
+     */
+    public SkyUnixHandleInventory inventoryInstance() {
+        return (SkyUnixHandleInventory) instances.get(SkyUnixHandleInventory.class.getSimpleName());
     }
 
     /**
@@ -84,8 +95,8 @@ public class SkyUnixAPI extends JavaPlugin {
      *
      * @return The instance of SkyUnixHandleDelete.
      */
-    public Object deleteInstance() {
-        return instances.get(SkyUnixHandleDelete.class.getSimpleName());
+    public SkyUnixHandleDelete deleteInstance() {
+        return (SkyUnixHandleDelete) instances.get(SkyUnixHandleDelete.class.getSimpleName());
     }
 
     /**
@@ -93,8 +104,8 @@ public class SkyUnixAPI extends JavaPlugin {
      *
      * @return The instance of SkyUnixHandleLocation.
      */
-    public Object locationInstance() {
-        return instances.get(SkyUnixHandleLocation.class.getSimpleName());
+    public SkyUnixHandleLocation locationInstance() {
+        return (SkyUnixHandleLocation) instances.get(SkyUnixHandleLocation.class.getSimpleName());
     }
 
     /**
@@ -102,8 +113,8 @@ public class SkyUnixAPI extends JavaPlugin {
      *
      * @return The instance of SkyUnixHandleNullCheck.
      */
-    public Object nullCheckInstance() {
-        return instances.get(SkyUnixHandleNullCheck.class.getSimpleName());
+    public SkyUnixHandleNullCheck nullCheckInstance() {
+        return (SkyUnixHandleNullCheck) instances.get(SkyUnixHandleNullCheck.class.getSimpleName());
     }
 
     /**
@@ -111,8 +122,8 @@ public class SkyUnixAPI extends JavaPlugin {
      *
      * @return The instance of SkyUnixHandlePlaceholder.
      */
-    public Object placeholderInstance() {
-        return instances.get(SkyUnixHandlePlaceholder.class.getSimpleName());
+    public SkyUnixHandlePlaceholder placeholderInstance() {
+        return (SkyUnixHandlePlaceholder) instances.get(SkyUnixHandlePlaceholder.class.getSimpleName());
     }
 
     /**
@@ -120,8 +131,8 @@ public class SkyUnixAPI extends JavaPlugin {
      *
      * @return The instance of SkyUnixHandleUpdate.
      */
-    public Object updateInstance() {
-        return instances.get(SkyUnixHandleUpdate.class.getSimpleName());
+    public SkyUnixHandleUpdate updateInstance() {
+        return (SkyUnixHandleUpdate) instances.get(SkyUnixHandleUpdate.class.getSimpleName());
     }
 
     /**
@@ -129,8 +140,17 @@ public class SkyUnixAPI extends JavaPlugin {
      *
      * @return The instance of SkyUnixHandleWorldBlock.
      */
-    public Object wordBlockInstance() {
-        return instances.get(SkyUnixHandleWorldBlock.class.getSimpleName());
+    public SkyUnixHandleWorldBlock wordBlockInstance() {
+        return (SkyUnixHandleWorldBlock) instances.get(SkyUnixHandleWorldBlock.class.getSimpleName());
+    }
+
+    /**
+     * Retrieves the instance of SkyUnixHandlePlayerStats.
+     *
+     * @return The instance of SkyUnixHandlePlayerStats.
+     */
+    public SkyUnixHandlePlayerStats playerStatsInstance() {
+        return (SkyUnixHandlePlayerStats) instances.get(SkyUnixHandlePlayerStats.class.getSimpleName());
     }
 
     /**

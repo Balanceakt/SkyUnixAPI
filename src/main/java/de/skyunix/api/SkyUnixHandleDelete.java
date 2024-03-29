@@ -1,5 +1,6 @@
 package de.skyunix.api;
 
+import de.skyunix.api.abstraction.FileHandle;
 import de.skyunix.utils.FilePath;
 
 import java.io.*;

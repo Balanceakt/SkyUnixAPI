@@ -29,11 +29,7 @@ dependencies {
 <dependency>
     <groupId>com.github.Balanceakt</groupId>
     <artifactId>SkyUnixAPIBungeecord</artifactId>
-<<<<<<< HEAD
     <version>1.3.5</version>
-=======
-    <version>1.3.5</version>
->>>>>>> 9a58d8b17b474d899173e03dc912de5263dcbb6a
 </dependency>
 ````
 
@@ -79,11 +75,9 @@ SkyUnixHandlePlaceholder simplePlaceHolder = SkyUnixAPI.getInstance().placeholde
 
 **readSimpleArgs:** This method reads a simple value from a specified table and key in a file. You can also specify an index to retrieve a specific value from a comma-separated list of values.
 
-**setSimpleArgsValues:** Similar to setSimpleArgValue, but here you can assign a list of values to a key and store this list as comma-separated values in the file.
+**setSimpleArgsValue:** Here you can assign a list of values to a key and store this list as comma-separated values in the file.
 
 **readColorCodes:** This method reads color codes from a file and converts them by replacing the '&' character with the '§' character.
-
-**setSimpleArgValue:** This method allows you to assign a simple value to a key in a table and save it in the corresponding file.
 
 **readTableCountKeys:** Counts the number of stored keys in a table.
 
